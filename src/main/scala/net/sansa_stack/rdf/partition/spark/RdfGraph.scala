@@ -13,7 +13,7 @@ object RdfGraph{
   def setVertex(triples: RDD[Triple]): RDD[Node] = {
     val subjects = triples.map(triple => triple.getMatchSubject)
     val objects = triples.map(triple => triple.getMatchObject)
-    subjects++objects
+    subjects.union(objects).distinct
   }
 }
 
