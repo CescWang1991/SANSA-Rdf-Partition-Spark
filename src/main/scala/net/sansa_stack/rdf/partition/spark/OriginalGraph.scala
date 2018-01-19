@@ -6,8 +6,8 @@ import org.apache.jena.graph.Triple
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 
-class OriginalGraph(val session: SparkSession,val path:String) extends RdfGraph {
-  val rdfReader = new RDFReader()
+abstract class OriginalGraph(val session: SparkSession,val path:String) extends RdfGraph {
+  val rdfReader = new RDFReader()(session)
   override val triples = rdfReader.load(session, path).persist
   override val vertex = RdfGraph.setVertex(triples).persist
 }
