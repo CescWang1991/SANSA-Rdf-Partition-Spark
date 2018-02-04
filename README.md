@@ -1,4 +1,5 @@
 # SANSA-Rdf-Partition-Spark
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 SANSA RDF Graph Partitioning is a library to perform RDF Graph Partitioning algorithms by implementing SANSA_Stack framework(see http://sansa-stack.net). In the case, [RDF](https://en.wikipedia.org/wiki/Resource_Description_Framework) files will be transformed as [org.apache.spark.graphx.Graph](https://spark.apache.org/docs/latest/api/scala/index.html#org.apache.spark.graphx.Graph) and the algorithms will be performed on [Apache Spark](https://spark.apache.org).
 
