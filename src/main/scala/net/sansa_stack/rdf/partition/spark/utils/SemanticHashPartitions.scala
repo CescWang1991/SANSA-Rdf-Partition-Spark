@@ -5,6 +5,14 @@ import org.apache.spark.SparkContext
 import org.apache.spark.graphx.{Edge, Graph, VertexId, VertexRDD}
 import org.apache.spark.rdd.RDD
 
+/**
+  * Semantic Hash Partitions are expanded from Baseline Hash Partitions
+  * For Baseline Hash Partition P(i), every v∈V(i) has triple groups
+  * Expand Vertices set V+(i) = V(i)∪tg(v*).vertices
+  * Expand Edges set E+(i) = tg(v*).edges
+  *
+  * @author Zhe Wang
+  */
 class SemanticHashPartitions(bhp: Graph[Node,Node], k: Int, sc: SparkContext) extends Serializable {
 
   bhp.cache()
