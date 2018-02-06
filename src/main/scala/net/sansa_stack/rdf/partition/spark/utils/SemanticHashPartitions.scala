@@ -17,14 +17,13 @@ class SemanticHashPartitions(bhp: Graph[Node,Node], k: Int, sc: SparkContext) ex
 
   bhp.cache()
   private val stg = new TripleGroup(bhp,TripleGroupType.s)
-  private val neighborsBroadcast = sc.broadcast(stg.verticesGroupSet.toLocalIterator.toArray)
-  private val edgesBroadcast = sc.broadcast(stg.edgesGroupSet.toLocalIterator.toArray)
+  private val neighborsBroadcast = sc.broadcast(stg.verticesGroupSet.collect())
+  private val edgesBroadcast = sc.broadcast(stg.edgesGroupSet.collect())
   private val hopNum = k
 
-  //val vertices = bhp.vertices.mapPartitions(it =>oneHopExpansionForVertices(it,neighborsBroadcast.value))
-  //val edges = bhp.vertices.mapPartitions(it=>oneHopExpansionForEdges(it,edgesBroadcast.value))
   val vertices = kHopExpansion(hopNum)._1
   val edges = kHopExpansion(hopNum)._2
+  private val graph = Graph[Node,Node](vertices,edges)
 
   private def kHopExpansion(k:Int): (RDD[(VertexId,Node)],RDD[Edge[Node]]) = {
     val temp = bhp.vertices

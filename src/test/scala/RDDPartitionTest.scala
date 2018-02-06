@@ -11,13 +11,14 @@ object RDDPartitionTest {
     val graph = InitialGraph.apply(session, path).cache()
     val bhp = BaselineHashPartitions.apply(graph, PartitionStrategy.RandomVertexCut)
     val shp = new SemanticHashPartitions(bhp, 2, sc)
-    println("Vertices___")
+    /*println("Vertices___")
     bhp.vertices.foreachPartition(it=>println(TaskContext.getPartitionId+","+it.length))
     println("___________")
     shp.vertices.foreachPartition(it=>println(TaskContext.getPartitionId+","+it.length))
     println("Edges______")
     bhp.edges.foreachPartition(it=>println(TaskContext.getPartitionId+","+it.length))
     println("___________")
-    shp.edges.foreachPartition(it=>println(TaskContext.getPartitionId+","+it.length))
+    shp.edges.foreachPartition(it=>println(TaskContext.getPartitionId+","+it.length))*/
+    //println(shp.graph.triplets.count)
   }
 }
