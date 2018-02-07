@@ -25,7 +25,7 @@ object EndToEndPaths {
     * @param graph the graph for which to list all end-to-end-paths
     * @return a list that contains all end-to-end-paths, one end-to-end-path is a list of vertices in sequence
     */
-  def run[VD, ED: ClassTag](graph:Graph[VD,ED]) = {
+  def run[VD, ED: ClassTag](graph:Graph[VD,ED]) : pathList = {
     val ops = graph.ops
     val source = graph.vertices.map(v=>v._1).subtract(ops.inDegrees.map(v=>v._1)).collect()
     val destination = graph.vertices.map(v=>v._1).subtract(ops.outDegrees.map(v=>v._1)).collect()
@@ -70,7 +70,7 @@ object EndToEndPaths {
       msg1.++(msg2)
     }
 
-    val pathsFromSource = Pregel.apply(pathGraph,initialMessage, activeDirection = EdgeDirection.In)(vertexProgram, sendMessage, mergeMessage)
+    val pathsFromSource = Pregel.apply(pathGraph,initialMessage, maxIterations=7, activeDirection = EdgeDirection.In)(vertexProgram, sendMessage, mergeMessage)
       .vertices.filter{ case(vid,list) => source.contains(vid)}.map{ case(vid,list) => list }
 
     pathsFromSource.reduce((list1, list2) => list1.++(list2))

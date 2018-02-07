@@ -1,8 +1,4 @@
-import net.sansa_stack.rdf.partition.spark.utils
-import net.sansa_stack.rdf.partition.spark.utils.{DistanceOfFarthestEdge, EndToEndPaths, InitialGraph}
-import org.apache.jena.graph.Node
-import org.apache.spark.graphx._
-import org.apache.spark.graphx.lib.ShortestPaths
+import net.sansa_stack.rdf.partition.spark.utils.{EndToEndPaths, InitialGraph, VertexAttribute}
 import org.apache.spark.sql.SparkSession
 
 object PathTest {
@@ -13,6 +9,7 @@ object PathTest {
     val sc = session.sparkContext
     val graph = InitialGraph.apply(session, path).cache()
 
-    EndToEndPaths.run(graph).foreach(println(_))
+    val allPaths = EndToEndPaths.run(graph)
+    VertexAttribute.apply(graph,allPaths).vertices.foreach(println(_))
   }
 }

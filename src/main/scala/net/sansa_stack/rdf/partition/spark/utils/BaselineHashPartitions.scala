@@ -1,7 +1,8 @@
 package net.sansa_stack.rdf.partition.spark.utils
 
-import org.apache.jena.graph.Node
 import org.apache.spark.graphx.{Graph, PartitionStrategy}
+
+import scala.reflect.ClassTag
 
 /**
   * Divide the RDF Graph into a set baseline hash partitions {p(1), p(2), ..., p(n)}
@@ -13,7 +14,7 @@ import org.apache.spark.graphx.{Graph, PartitionStrategy}
   */
 object BaselineHashPartitions {
 
-  def apply(graph: Graph[Node,Node], ps: PartitionStrategy): Graph[Node,Node] = {
+  def apply[VD,ED: ClassTag](graph: Graph[VD,ED], ps: PartitionStrategy): Graph[VD,ED] = {
     graph.partitionBy(ps)
   }
 }

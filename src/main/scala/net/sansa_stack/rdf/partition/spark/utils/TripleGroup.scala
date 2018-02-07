@@ -1,8 +1,9 @@
 package net.sansa_stack.rdf.partition.spark.utils
 
 import net.sansa_stack.rdf.partition.spark.utils.TripleGroupType.TripleGroupType
-import org.apache.jena.graph.Node
 import org.apache.spark.graphx._
+
+import scala.reflect.ClassTag
 
 /**
   * Construct triple groups for input vertices
@@ -18,7 +19,7 @@ import org.apache.spark.graphx._
   *
   * @author Zhe Wang
   */
-class TripleGroup(graph: Graph[Node,Node], tgt:TripleGroupType) extends Serializable {
+class TripleGroup[VD,ED: ClassTag](graph: Graph[VD,ED], tgt:TripleGroupType) extends Serializable {
 
   graph.cache()
   val ops = graph.ops
@@ -34,11 +35,11 @@ class TripleGroup(graph: Graph[Node,Node], tgt:TripleGroupType) extends Serializ
     }
   }
 
-  private def setVerticesGroupSet(): VertexRDD[Array[(VertexId,Node)]] = {
+  private def setVerticesGroupSet(): VertexRDD[Array[(VertexId,VD)]] = {
     ops.collectNeighbors(direction.get)
   }
 
-  private def setEdgesGroupSet(): VertexRDD[Array[Edge[Node]]] = {
+  private def setEdgesGroupSet(): VertexRDD[Array[Edge[ED]]] = {
     ops.collectEdges(direction.get)
   }
 }

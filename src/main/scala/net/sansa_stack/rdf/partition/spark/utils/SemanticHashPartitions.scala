@@ -1,9 +1,10 @@
 package net.sansa_stack.rdf.partition.spark.utils
 
-import org.apache.jena.graph.Node
 import org.apache.spark.SparkContext
 import org.apache.spark.graphx.{Edge, Graph, VertexId, VertexRDD}
 import org.apache.spark.rdd.RDD
+
+import scala.reflect.ClassTag
 
 /**
   * Semantic Hash Partitions are expanded from Baseline Hash Partitions
@@ -13,7 +14,7 @@ import org.apache.spark.rdd.RDD
   *
   * @author Zhe Wang
   */
-class SemanticHashPartitions(bhp: Graph[Node,Node], k: Int, sc: SparkContext) extends Serializable {
+class SemanticHashPartitions[VD: ClassTag,ED: ClassTag](bhp: Graph[VD,ED], k: Int, sc: SparkContext) extends Serializable {
 
   bhp.cache()
   private val stg = new TripleGroup(bhp,TripleGroupType.s)
@@ -23,12 +24,12 @@ class SemanticHashPartitions(bhp: Graph[Node,Node], k: Int, sc: SparkContext) ex
 
   val vertices = kHopExpansion(hopNum)._1
   val edges = kHopExpansion(hopNum)._2
-  private val graph = Graph[Node,Node](vertices,edges)
+  val graph = Graph[VD,ED](vertices,edges)
 
-  private def kHopExpansion(k:Int): (RDD[(VertexId,Node)],RDD[Edge[Node]]) = {
+  private def kHopExpansion(k:Int): (RDD[(VertexId,VD)],RDD[Edge[ED]]) = {
     val temp = bhp.vertices
-    val v = new Array[RDD[(VertexId,Node)]](k)
-    val e = new Array[RDD[Edge[Node]]](k)
+    val v = new Array[RDD[(VertexId,VD)]](k)
+    val e = new Array[RDD[Edge[ED]]](k)
     for(i<-0 to k-1){
       if(i==0){
         v(i) = temp.mapPartitions(it => oneHopExpansionForVertices(it,neighborsBroadcast.value))
@@ -42,7 +43,7 @@ class SemanticHashPartitions(bhp: Graph[Node,Node], k: Int, sc: SparkContext) ex
     (v(k-1),e(k-1))
   }
 
-  private def oneHopExpansionForVertices(iterator:Iterator[(VertexId,Node)],verticesSet: Array[(VertexId,Array[(VertexId,Node)])]):Iterator[(VertexId,Node)] = {
+  private def oneHopExpansionForVertices(iterator:Iterator[(VertexId,VD)],verticesSet: Array[(VertexId,Array[(VertexId,VD)])]):Iterator[(VertexId,VD)] = {
     val anchorVertices = iterator.toArray
     val expandVertices = anchorVertices.flatMap(vertex =>
       verticesSet.find{ case(anchorVertexId,_) =>
@@ -51,7 +52,7 @@ class SemanticHashPartitions(bhp: Graph[Node,Node], k: Int, sc: SparkContext) ex
     expandVertices.++(anchorVertices).distinct.toIterator
   }
 
-  private def oneHopExpansionForEdges(iterator:Iterator[(VertexId,Node)], edgesSet: Array[(VertexId,Array[Edge[Node]])]): Iterator[Edge[Node]] = {
+  private def oneHopExpansionForEdges(iterator:Iterator[(VertexId,VD)], edgesSet: Array[(VertexId,Array[Edge[ED]])]): Iterator[Edge[ED]] = {
     val verticesWithEdgeGroupSet = edgesSet.map{ case(id,_) => id}
     val anchorVertices = iterator.filter{ case(id,_)=>verticesWithEdgeGroupSet.contains(id) }.toArray
     val expandEdges = anchorVertices.flatMap(vertex =>
