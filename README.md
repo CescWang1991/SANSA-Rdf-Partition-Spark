@@ -30,3 +30,5 @@ For Path Partitioning, it exacts end to end paths and generate path groups for e
   <img src="https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/Figures/P0%20for%20PP.jpg">
   <img src="https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/Figures/P1%20for%20PP.jpg">
 </p>
+
+Remark: Currently path partition algorithm is unable to handle with graphs which has paths contain directed circle.
