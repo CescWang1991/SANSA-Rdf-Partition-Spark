@@ -16,3 +16,10 @@ Load [N-Triple file](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/b
 | 1 | 116 | 226 | 219 | 316 | 361 | 316 | 361 |
 | 2 | 127 | 213 | 180 | 307 | 338 | 307 | 348 |
 | 3 | 94 | 100 | 42 | 295 | 306 | 296 | 325 |
+
+## Example#2: Path Partitioning
+Load [N-Triple file](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/resources/Clustering_sampledata1.nt) as example rdf graph. The example graph is shown as follow:
+
+<p align="center"> 
+  <img src="https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/resources/Path%20Partition-Example%20Graph.jpg">
+</p>
