@@ -14,7 +14,7 @@ import scala.reflect.ClassTag
   */
 object BaselineHashPartitions {
 
-  def apply[VD,ED: ClassTag](graph: Graph[VD,ED], ps: PartitionStrategy): Graph[VD,ED] = {
+  def apply[VD: ClassTag,ED: ClassTag](graph: Graph[VD,ED], ps: PartitionStrategy): Graph[VD,ED] = {
     graph.partitionBy(ps)
   }
 }

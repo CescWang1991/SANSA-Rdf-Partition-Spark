@@ -18,11 +18,13 @@ object VertexAttribute {
   /**
     * Generate the vertex attribute for each vertex
     *
+    * @tparam VD the vertex attribute type (not used in the computation)
     * @tparam ED the edge attribute type (not used in the computation)
+    *
     * @param graph the graph for which to generate attributes
     * @return a graph where each vertex attribute is a tuple containing weight and start vertices list
     */
-  def apply[VD,ED: ClassTag](graph: Graph[VD,ED], allPaths: EndToEndPaths.pathList): Graph[attribute,ED] = {
+  def apply[VD: ClassTag,ED: ClassTag](graph: Graph[VD,ED], allPaths: EndToEndPaths.pathList): Graph[attribute,ED] = {
 
     graph.mapVertices{ case(vid,_) =>  GenerateVertexAttribute(vid,allPaths)}
   }

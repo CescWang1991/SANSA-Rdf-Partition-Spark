@@ -1,10 +1,10 @@
 package net.sansa_stack.rdf.partition.spark.utils
 
 import org.apache.spark.SparkContext
-import org.apache.spark.graphx.{Edge, Graph, VertexId, VertexRDD}
+import org.apache.spark.graphx.{Edge, Graph, VertexId}
 import org.apache.spark.rdd.RDD
-
 import scala.reflect.ClassTag
+
 
 /**
   * Semantic Hash Partitions are expanded from Baseline Hash Partitions
@@ -14,7 +14,10 @@ import scala.reflect.ClassTag
   *
   * @author Zhe Wang
   */
-class SemanticHashPartitions[VD: ClassTag,ED: ClassTag](bhp: Graph[VD,ED], k: Int, sc: SparkContext) extends Serializable {
+class SemanticHashPartitions[VD: ClassTag,ED: ClassTag](
+   bhp: Graph[VD,ED],
+   k: Int,
+   sc: SparkContext) extends Serializable {
 
   bhp.cache()
   private val stg = new TripleGroup(bhp,TripleGroupType.s)
@@ -43,7 +46,9 @@ class SemanticHashPartitions[VD: ClassTag,ED: ClassTag](bhp: Graph[VD,ED], k: In
     (v(k-1),e(k-1))
   }
 
-  private def oneHopExpansionForVertices(iterator:Iterator[(VertexId,VD)],verticesSet: Array[(VertexId,Array[(VertexId,VD)])]):Iterator[(VertexId,VD)] = {
+  private def oneHopExpansionForVertices(
+    iterator:Iterator[(VertexId,VD)],
+    verticesSet: Array[(VertexId,Array[(VertexId,VD)])]):Iterator[(VertexId,VD)] = {
     val anchorVertices = iterator.toArray
     val expandVertices = anchorVertices.flatMap(vertex =>
       verticesSet.find{ case(anchorVertexId,_) =>
@@ -62,3 +67,4 @@ class SemanticHashPartitions[VD: ClassTag,ED: ClassTag](bhp: Graph[VD,ED], k: In
     expandEdges.toIterator
   }
 }
+
