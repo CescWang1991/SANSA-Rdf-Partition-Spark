@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.partition.spark.partitionStrategy
+package net.sansa_stack.rdf.partition.spark.strategy
 
 import net.sansa_stack.rdf.partition.spark.utils.TripleGroupType.TripleGroupType
 import net.sansa_stack.rdf.partition.spark.utils.{TripleGroup, TripleGroupType}
@@ -10,26 +10,39 @@ import scala.reflect.ClassTag
 
 
 /**
-  * Semantic Hash Partitions are expanded from Baseline Hash Partitions
-  * For Baseline Hash Partition P(i), every v∈V(i) has triple groups
-  * Expand Vertices set V+(i) = V(i)∪tg(v*).vertices
+  * Semantic Hash Partition Strategy expands the partitions by assign triple group of each vertex to partitions
   * Expand Edges set E+(i) = tg(v*).edges
+  *
+  * @param graph target graph to be partitioned
+  * @param k number of iterations
+  * @param tgt type of triple groups, a set of subject(s), object(o) and subject-object(so)
+  * @param sc Spark Context
+  *
+  * @tparam VD the vertex attribute associated with each vertex in the set.
+  * @tparam ED the edge attribute associated with each edge in the set.
   *
   * @author Zhe Wang
   */
 class SemanticHashPartitionStrategy[VD: ClassTag,ED: ClassTag](
-   graph: Graph[VD,ED],
-   k: Int,
-   tgt: TripleGroupType,
-   sc: SparkContext) extends Serializable {
+    override val graph: Graph[VD,ED],
+    k: Int,
+    tgt: TripleGroupType,
+    sc: SparkContext)
+    extends PartitionStrategy(graph) with Serializable {
 
   private val stg = new TripleGroup(graph,tgt)
   private val neighborsBroadcast = sc.broadcast(stg.verticesGroupSet.collect())
   private val edgesBroadcast = sc.broadcast(stg.edgesGroupSet.collect())
 
-  def partitionBy(): Graph[VD,ED] = { partitionBy(graph.edges.partitions.length) }
+  override def partitionBy(): Graph[VD,ED] = { partitionBy(graph.edges.partitions.length) }
 
-  def partitionBy(numPartitions: PartitionID): Graph[VD,ED] = {
+  /**
+    * Partition the graph with input number of partitions
+    *
+    * @param numPartitions
+    * @return partitioned graph
+    */
+  override def partitionBy(numPartitions: PartitionID): Graph[VD,ED] = {
     val bhp = graph.partitionBy(PartitionStrategy.EdgePartition1D,numPartitions).cache()
     val verticesList = {
       tgt match{
@@ -51,7 +64,7 @@ class SemanticHashPartitionStrategy[VD: ClassTag,ED: ClassTag](
 
     val v = new Array[RDD[(VertexId,VD)]](k+1)
     val e = new Array[RDD[Edge[ED]]](k+1)
-    for(i<-0 to k){
+    for(i<-0 to k-1){
       if(i==0){
         v(i) = newVertices.mapPartitions(it => oneHopExpansionForVertices(it))
         e(i) = newVertices.mapPartitions(it => oneHopExpansionForEdges(it))
@@ -61,7 +74,7 @@ class SemanticHashPartitionStrategy[VD: ClassTag,ED: ClassTag](
         e(i) = v(i-1).mapPartitions(it => oneHopExpansionForEdges(it))
       }
     }
-    Graph[VD,ED](v(k),e(k))
+    Graph[VD,ED](v(k-1),e(k-1))
   }
 
   private def oneHopExpansionForVertices(iterator:Iterator[(VertexId,VD)]):Iterator[(VertexId,VD)] = {

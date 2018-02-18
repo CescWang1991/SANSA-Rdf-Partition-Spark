@@ -1,6 +1,6 @@
-package net.sansa_stack.rdf.partition.spark.examples
+package net.sansa_stack.rdf.partition.spark.example
 
-import net.sansa_stack.rdf.partition.spark.partitionStrategy.SemanticHashPartitionStrategy
+import net.sansa_stack.rdf.partition.spark.strategy.SemanticHashPartitionStrategy
 import net.sansa_stack.rdf.partition.spark.utils.{InitialGraph, TripleGroupType}
 import org.apache.spark.TaskContext
 import org.apache.spark.graphx.PartitionStrategy
@@ -14,7 +14,7 @@ object SemanticHashPartitionExample {
     val session = SparkSession.builder().master(master).appName("Semantic Hash Partitioning").getOrCreate()
     val sc = session.sparkContext
     val graph = InitialGraph.apply(session, path).cache()
-    graph.partitionBy(PartitionStrategy.EdgePartition1D,4).edges.foreachPartition(it => println("Partition " + TaskContext.getPartitionId + " has " + it.toList.distinct.length + " edges"))
+    //graph.partitionBy(PartitionStrategy.EdgePartition1D,4).edges.foreachPartition(it => println("Partition " + TaskContext.getPartitionId + " has " + it.toList.distinct.length + " edges"))
 
     for (i<- 1 to 3) {
       val hopNum = i

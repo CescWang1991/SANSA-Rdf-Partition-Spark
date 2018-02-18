@@ -1,6 +1,6 @@
-package net.sansa_stack.rdf.partition.spark.examples
+package net.sansa_stack.rdf.partition.spark.example
 
-import net.sansa_stack.rdf.partition.spark.partitionStrategy.PathPartitionStrategy
+import net.sansa_stack.rdf.partition.spark.strategy.PathPartitionStrategy
 import net.sansa_stack.rdf.partition.spark.utils.InitialGraph
 import org.apache.spark.TaskContext
 import org.apache.spark.sql.SparkSession
@@ -14,7 +14,7 @@ object PathPartitionExample {
     val graph = InitialGraph.apply(session, path).cache()
 
     val pps = new PathPartitionStrategy(graph)
-    pps.partitionBy(2).vertices.foreach(v=>println(TaskContext.getPartitionId()+","+v))
+    //pps.partitionBy(2).vertices.foreach(v=>println(TaskContext.getPartitionId()+","+v))
     pps.partitionBy(2).triplets.foreach(t=>println(TaskContext.getPartitionId()+","+t))
   }
 }
