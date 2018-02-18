@@ -2,7 +2,6 @@ package net.sansa_stack.rdf.partition.spark.partitionStrategy
 
 import net.sansa_stack.rdf.partition.spark.utils.{EndToEndPaths, StartVerticesGroup}
 import org.apache.spark.graphx._
-import org.apache.spark.rdd.RDD
 
 import scala.reflect.ClassTag
 
@@ -16,14 +15,6 @@ class PathPartitionStrategy[VD: ClassTag,ED:ClassTag](graph: Graph[VD,ED]) exten
   val pathLists = pathGraph.map{ case(_,list) => list }.reduce((list1, list2) => list1.++(list2))
   val sources = EndToEndPaths.setSrcVertices(graph)
   val destinations = EndToEndPaths.setDstVertices(graph)
-
-  private def getPartition(src:VertexId,svg:Array[Array[VertexId]],numPartitions:PartitionID) : PartitionID = {
-    svg.flatMap(array =>
-      array.flatMap(vid =>
-        Map(vid -> svg.indexOf(array))
-      )
-    ).toMap.getOrElse(src,numPartitions)
-  }
 
   def partitionBy(): Graph[VD,ED] = { partitionBy(graph.edges.partitions.length) }
 
@@ -58,5 +49,13 @@ class PathPartitionStrategy[VD: ClassTag,ED:ClassTag](graph: Graph[VD,ED]) exten
     }.cache()
 
     Graph[VD,ED](newVertices,newEdges)
+  }
+
+  private def getPartition(src:VertexId,svg:Array[Array[VertexId]],numPartitions:PartitionID) : PartitionID = {
+    svg.flatMap(array =>
+      array.flatMap(vid =>
+        Map(vid -> svg.indexOf(array))
+      )
+    ).toMap.getOrElse(src,numPartitions)
   }
 }

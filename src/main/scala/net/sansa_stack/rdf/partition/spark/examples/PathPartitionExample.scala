@@ -14,6 +14,7 @@ object PathPartitionExample {
     val graph = InitialGraph.apply(session, path).cache()
 
     val pps = new PathPartitionStrategy(graph)
-    pps.partitionBy(2).triplets.foreach(v=>println(TaskContext.getPartitionId()+","+v))
+    pps.partitionBy(2).vertices.foreach(v=>println(TaskContext.getPartitionId()+","+v))
+    pps.partitionBy(2).triplets.foreach(t=>println(TaskContext.getPartitionId()+","+t))
   }
 }
