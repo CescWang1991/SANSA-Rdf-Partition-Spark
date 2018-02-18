@@ -10,30 +10,30 @@ The SANSA-Rdf-Partition-Spark currently supports algorithms provided by followin
 ## Example#1: Semantic Hash Partitioning
 Load [N-Triple file](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/resources/SilviaClustering_HairStylist_TaxiDriver.nt) to our example and apply a graph partitioning algorithm named Semantic Hash Partitioning. The example graph has in total 465 vertices and 499 edges, which is partitioned into 4 partitions. Firstly, we apply sementic hash partition using subject triple groups. The number of vertices and edges in each partition are shown in following table.
 
-| PartitionId | Edges before | Edges after 1-hop | Edges after 2-hop | Edges after 3-hop |
-| :----- | :----- | :----- | :----- | :----- |
-| 0 | 71 | 331 | 339 | 339 |
-| 1 | 212 | 344 | 344 | 344 |
-| 2 | 174 | 323 | 331 | 331 |
-| 3 | 42 | 301 | 316 | 317 |
+| PartitionId | Edges after 1-hop | Edges after 2-hop | Edges after 3-hop |
+| :----- | :----- | :----- | :----- |
+| 0 | 71 | 331 | 339
+| 1 | 212 | 344 | 344
+| 2 | 174 | 323 | 331
+| 3 | 42 | 301 | 316
 
 Then we apply sementic hash partition by using object triple groups:
 
-| PartitionId | Edges before | Edges after 1-hop | Edges after 2-hop | Edges after 3-hop |
-| :----- | :----- | :----- | :----- | :----- |
-| 0 | 71 | 257 | 258 | 258 |
-| 1 | 212 | 385 | 385 | 385 |
-| 2 | 174 | 370 | 370 | 370 |
-| 3 | 42 | 255 | 257 | 257 |
+| PartitionId | Edges after 1-hop | Edges after 2-hop | Edges after 3-hop |
+| :----- | :----- | :----- | :----- |
+| 0 | 71 | 257 | 258 |
+| 1 | 212 | 385 | 385 |
+| 2 | 174 | 370 | 370 |
+| 3 | 42 | 255 | 257 |
 
 Finally, we apply semantic hash partition by using subject-object(so) triple groups:
 
-| PartitionId | Edges before | Edges after 1-hop | Edges after 2-hop | Edges after 3-hop |
-| :----- | :----- | :----- | :----- | :----- |
-| 0 | 71 | 496 | 499 | 499 |
-| 1 | 212 | 499 | 499 | 499 |
-| 2 | 174 | 499 | 499 | 499 |
-| 3 | 42 | 493 | 499 | 499 |
+| PartitionId | Edges after 1-hop | Edges after 2-hop | Edges after 3-hop |
+| :----- | :----- | :----- | :----- |
+| 0 | 71 | 496 | 499 |
+| 1 | 212 | 499 | 499 |
+| 2 | 174 | 499 | 499 |
+| 3 | 42 | 493 | 499 |
 
 Semantic hash partition is suitable for star queries, however, partition applied by subject triple group can only ensure star queries whose core in the star has only outgoing edges, and same for partition applied by object triple group. Although partition applied by so triple group can solve the problem, in previous example we can find after 2-hop-expansion, the size of graph in each partition is close to original graph.
 
