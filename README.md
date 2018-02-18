@@ -47,8 +47,13 @@ Load [N-Triple file](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/b
 For Path Partitioning, it exacts end to end paths and generate path groups for each start vertices (Vertices has only outgoing edges, no incoming edges). Then merges a vertex according to number of paths pass through this vertex. In the example, start vertices are {1,3,8,9}, if we want to has 2 partitions, then paths from {1,8} are merged, paths from {3,9} are merged. So we have two partitions as follow:
 
 <p align="center"> 
-  <img src="https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/Figures/P0%20for%20PP.jpg">
-  <img src="https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/Figures/P1%20for%20PP.jpg">
+  <img src="https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/Figures/Path%20Partition.jpg">
+</p>
+
+Same graph partitioned by semantic hash partition with 2 partitions:
+
+<p align="center"> 
+  <img src="https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/Figures/Semantic%20Hash%20Partition.jpg">
 </p>
 
 Remark: Currently path partition algorithm is unable to handle with graphs which has paths contain directed circle.
