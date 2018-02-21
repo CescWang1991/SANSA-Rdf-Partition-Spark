@@ -28,7 +28,7 @@ class PartitionStrategyMetrics[VD: ClassTag, ED: ClassTag](
     */
   def duplication(): Double = {
     val numDistinctEdges = ps.graph.edges.distinct.count
-    val numTotalEdges = ps.partitionBy(numPartitions).edges.count
+    val numTotalEdges = ps.partitionBy().edges.count
     (numTotalEdges - numDistinctEdges).toDouble / numDistinctEdges.toDouble
   }
 

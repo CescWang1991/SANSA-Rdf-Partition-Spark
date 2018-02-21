@@ -2,9 +2,9 @@ package net.sansa_stack.rdf.partition.spark.strategy
 
 import net.sansa_stack.rdf.partition.spark.utils.TripleGroupType.TripleGroupType
 import net.sansa_stack.rdf.partition.spark.utils.{TripleGroup, TripleGroupType}
-import org.apache.spark.{SparkContext, TaskContext}
 import org.apache.spark.graphx._
 import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.SparkSession
 
 import scala.reflect.ClassTag
 
@@ -14,9 +14,10 @@ import scala.reflect.ClassTag
   * Expand Edges set E+(i) = tg(v*).edges
   *
   * @param graph target graph to be partitioned
-  * @param k number of iterations
+  * @param session spark session
+  * @param numPartitions number of partitions
+  * @param numHop number of iterations
   * @param tgt type of triple groups, a set of subject(s), object(o) and subject-object(so)
-  * @param sc Spark Context
   *
   * @tparam VD the vertex attribute associated with each vertex in the set.
   * @tparam ED the edge attribute associated with each edge in the set.
@@ -25,76 +26,140 @@ import scala.reflect.ClassTag
   */
 class SemanticHashPartitionStrategy[VD: ClassTag,ED: ClassTag](
     override val graph: Graph[VD,ED],
-    k: Int,
-    tgt: TripleGroupType,
-    sc: SparkContext)
-    extends PartitionStrategy(graph) with Serializable {
-
-  private val stg = new TripleGroup(graph,tgt)
-  private val neighborsBroadcast = sc.broadcast(stg.verticesGroupSet.collect())
-  private val edgesBroadcast = sc.broadcast(stg.edgesGroupSet.collect())
-
-  override def partitionBy(): Graph[VD,ED] = { partitionBy(graph.edges.partitions.length) }
+    override val session: SparkSession,
+    numPartitions: PartitionID,
+    private var numHop: Int,
+    private var tgt: TripleGroupType)
+  extends PartitionStrategy(graph, session, numPartitions) with Serializable {
 
   /**
-    * Partition the graph with input number of partitions
+    * Constructs a default instance with default parameters {numPartitions: graph partitions,
+    * numHop: 2, TripleGroupType: subject}
     *
-    * @param numPartitions
-    * @return partitioned graph
     */
-  override def partitionBy(numPartitions: PartitionID): Graph[VD,ED] = {
-    val bhp = graph.partitionBy(PartitionStrategy.EdgePartition1D,numPartitions).cache()
-    val verticesList = {
-      tgt match{
-        case TripleGroupType.s =>
-          bhp.triplets.map(et=>(TaskContext.getPartitionId,(et.srcId,et.srcAttr))).distinct.collect
-        case TripleGroupType.o =>
-          bhp.triplets.map(et=>(TaskContext.getPartitionId,(et.dstId,et.dstAttr))).distinct.collect
-        case TripleGroupType.so =>
-          bhp.triplets.map(et=>(TaskContext.getPartitionId,(et.srcId,et.srcAttr)))
-            .++(bhp.triplets.map(et=>(TaskContext.getPartitionId,(et.dstId,et.dstAttr))))
-            .distinct.collect
-      }
-    }
-    val newVertices = graph.vertices.mapPartitionsWithIndex{ case(pid,_)=>
-      verticesList.filter{ case(p,_) =>
-        p == pid
-      }.map(pv=>pv._2).toIterator
-    }
-
-    val v = new Array[RDD[(VertexId,VD)]](k+1)
-    val e = new Array[RDD[Edge[ED]]](k+1)
-    for(i<-0 to k-1){
-      if(i==0){
-        v(i) = newVertices.mapPartitions(it => oneHopExpansionForVertices(it))
-        e(i) = newVertices.mapPartitions(it => oneHopExpansionForEdges(it))
-      }
-      else{
-        v(i) = v(i-1).mapPartitions(it => oneHopExpansionForVertices(it))
-        e(i) = v(i-1).mapPartitions(it => oneHopExpansionForEdges(it))
-      }
-    }
-    Graph[VD,ED](v(k-1),e(k-1))
+  def this(graph: Graph[VD,ED], session: SparkSession) = {
+    this(graph, session, graph.edges.partitions.length, 2, TripleGroupType.s)
   }
 
-  private def oneHopExpansionForVertices(iterator:Iterator[(VertexId,VD)]):Iterator[(VertexId,VD)] = {
-    val verticesSet = neighborsBroadcast.value
-    val anchorVertices = iterator.toArray
-    val expandVertices = anchorVertices.flatMap(vertex =>
-      verticesSet.find{ case(anchorVertexId,_) =>
-        anchorVertexId == vertex._1}.get._2
-    )
-    expandVertices.++(anchorVertices).distinct.toIterator
+  /**
+    * Constructs a default instance with default parameters {numHop: 2, TripleGroupType: subject}
+    *
+    */
+  def this(graph: Graph[VD,ED], session: SparkSession, numPartitions: Int) = {
+    this(graph, session, numPartitions, 2, TripleGroupType.s)
   }
 
-  private def oneHopExpansionForEdges(iterator:Iterator[(VertexId,VD)]): Iterator[Edge[ED]] = {
-    val edgesSet = edgesBroadcast.value
-    val verticesWithEdgeGroupSet = edgesSet.map{ case(id,_) => id}
-    val anchorVertices = iterator.filter{ case(id,_)=>verticesWithEdgeGroupSet.contains(id) }.toArray
-    val expandEdges = anchorVertices.flatMap(vertex =>
-      edgesSet.find{ case(anchorVertexId,_) =>
-        anchorVertexId == vertex._1}.get._2
-    )
-    expandEdges.distinct.toIterator
+  /**
+    * Sets the number of iterations (default: 2)
+    *
+    */
+  def setNumHop(numHop: Int): this.type = {
+    require(numHop > 0,
+      s"Number of iterations must be positive but got ${numHop}")
+    this.numHop = numHop
+    this
+  }
+
+  /**
+    * Sets the type of triple group type (default: subject)
+    *
+    */
+  def setTripleGroupType(tgt: TripleGroupType): this.type = {
+    require(TripleGroupType.values.contains(tgt),
+      s"Triple Group Type must be {s, o, so} but got ${tgt}")
+    this.tgt = tgt
+    this
+  }
+
+  private val sc = session.sparkContext
+
+  override def partitionBy(): Graph[VD,ED] = {
+    val stg = new TripleGroup(graph,tgt)
+    val edgesBroadcast = sc.broadcast(stg.edgesGroupSet.collectAsMap)
+    val e = new Array[RDD[Edge[ED]]](numHop)
+    tgt match {
+      case TripleGroupType.s | TripleGroupType.so =>
+        val bhp = graph.partitionBy(PartitionStrategy.EdgePartition1D,numPartitions).cache()
+        for(i<-0 to numHop-1){
+          if(i==0){
+            e(i) = bhp.edges
+          }
+          else{
+            e(i) = e(i-1).mapPartitions{ iter =>
+              val initialEdges = iter.toArray
+              val expandEdges = initialEdges.map(e => e.dstId).distinct.flatMap(vid =>
+                  edgesBroadcast.value.get(vid)).flatten
+              initialEdges.++(expandEdges).distinct.toIterator
+            }
+          }
+        }
+        Graph[VD,ED](bhp.vertices,e(numHop-1))
+      case TripleGroupType.o =>
+        val bhp = graph.reverse.partitionBy(PartitionStrategy.EdgePartition1D,numPartitions).reverse.cache()
+        for(i<-0 to numHop-1){
+          if(i==0){
+            e(i) = bhp.edges
+          }
+          else{
+            e(i) = e(i-1).mapPartitions{ iter =>
+              val initialEdges = iter.toArray
+              val expandEdges = initialEdges.map(e => e.srcId).distinct.flatMap(vid =>
+                edgesBroadcast.value.get(vid)).flatten
+              initialEdges.++(expandEdges).distinct.toIterator
+            }
+          }
+        }
+        Graph[VD,ED](bhp.vertices,e(numHop-1))
+    }
+  }
+
+  override def getVertices(): RDD[(VertexId, VD)] = {
+    val stg = new TripleGroup(graph,tgt)
+    val verticesBroadcast = sc.broadcast(stg.verticesGroupSet.collectAsMap)
+    val v = new Array[RDD[(VertexId, VD)]](numHop)
+    tgt match {
+      case TripleGroupType.s | TripleGroupType.so =>
+        val bhp = graph.partitionBy(PartitionStrategy.EdgePartition1D,numPartitions).cache()
+        for(i<-0 to numHop-1){
+          if(i==0){
+            v(i) = bhp.triplets.mapPartitions{ iter =>
+              val initialVertices = iter.map(e=>(e.srcId,e.srcAttr)).toArray.distinct
+              val expandVertices = initialVertices.flatMap{ case(vid,_) =>
+                verticesBroadcast.value.get(vid)}.flatten
+              initialVertices.++(expandVertices).distinct.toIterator
+            }
+          }
+          else{
+            v(i) = v(i-1).mapPartitions{ iter =>
+              val initialVertices = iter.toArray
+              val expandVertices = initialVertices.flatMap{ case(vid,_) =>
+                verticesBroadcast.value.get(vid)}.flatten
+              initialVertices.++(expandVertices).distinct.toIterator
+            }
+          }
+        }
+        v(numHop-1)
+      case TripleGroupType.o =>
+        val bhp = graph.reverse.partitionBy(PartitionStrategy.EdgePartition1D,numPartitions).reverse.cache()
+        for(i<-0 to numHop-1){
+          if(i==0){
+            v(i) = bhp.triplets.mapPartitions{ iter =>
+              val initialVertices = iter.map(e=>(e.dstId,e.dstAttr)).toArray.distinct
+              val expandVertices = initialVertices.flatMap{ case(vid,_) =>
+                verticesBroadcast.value.get(vid)}.flatten
+              initialVertices.++(expandVertices).distinct.toIterator
+            }
+          }
+          else{
+            v(i) = v(i-1).mapPartitions{ iter =>
+              val initialVertices = iter.toArray
+              val expandVertices = initialVertices.flatMap{ case(vid,_) =>
+                verticesBroadcast.value.get(vid)}.flatten
+              initialVertices.++(expandVertices).distinct.toIterator
+            }
+          }
+        }
+        v(numHop-1)
+    }
   }
 }

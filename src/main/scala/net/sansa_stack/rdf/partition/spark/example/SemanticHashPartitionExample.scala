@@ -16,11 +16,11 @@ object SemanticHashPartitionExample {
     val graph = InitialGraph.apply(session, path).cache()
     //graph.partitionBy(PartitionStrategy.EdgePartition1D,4).edges.foreachPartition(it => println("Partition " + TaskContext.getPartitionId + " has " + it.toList.distinct.length + " edges"))
 
-    for (i<- 1 to 3) {
+    /*for (i<- 1 to 3) {
       val hopNum = i
       val shps = new SemanticHashPartitionStrategy(graph, hopNum, TripleGroupType.s, sc)
       println(hopNum + "-hop-expansion______")
       shps.partitionBy().edges.foreachPartition(it => println("Partition " + TaskContext.getPartitionId + " has " + it.length + " edges"))
-    }
+    }*/
   }
 }

@@ -12,8 +12,8 @@ object EvaluationTest {
     val session = SparkSession.builder().master("local[4]").appName("Rdf Graph Partitioning").getOrCreate()
     val graph = InitialGraph.apply(session, path).cache()
 
-    val pps = new PathPartitionStrategy(graph)
+    /*val pps = new PathPartitionStrategy(graph)
     val psm = new PartitionStrategyMetrics(pps,2)
-    println("Duplication: "+psm.duplication())
+    println("Duplication: "+psm.duplication())*/
   }
 }

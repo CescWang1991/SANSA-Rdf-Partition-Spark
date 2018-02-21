@@ -2,8 +2,8 @@ package net.sansa_stack.rdf.partition.spark.strategy
 
 import net.sansa_stack.rdf.partition.spark.utils.{EndToEndPaths, StartVerticesGroup}
 import org.apache.spark.graphx._
-import org.apache.spark.graphx.impl.GraphImpl
-import org.apache.spark.storage.StorageLevel
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.SparkSession
 
 import scala.reflect.ClassTag
 
@@ -13,29 +13,26 @@ import scala.reflect.ClassTag
   * Expand Edges set E+(i) = pg(sv*).edges
   *
   * @param graph target graph to be partitioned
+  * @param session spark session
+  * @param numPartitions number of partitions
   *
   * @tparam VD the vertex attribute associated with each vertex in the set.
   * @tparam ED the edge attribute associated with each edge in the set.
   *
   * @author Zhe Wang
   */
-class PathPartitionStrategy[VD: ClassTag,ED: ClassTag](override val graph: Graph[VD,ED])
-    extends PartitionStrategy(graph) with Serializable {
+class PathPartitionStrategy[VD: ClassTag,ED: ClassTag](
+    override val graph: Graph[VD,ED],
+    override val session: SparkSession,
+    numPartitions: PartitionID)
+  extends PartitionStrategy(graph,session,numPartitions) with Serializable {
 
   graph.cache()
   private val pathGraph = EndToEndPaths.run(graph)
   private val pathLists = pathGraph.map{ case(_,list) => list }.reduce((list1, list2) => list1.++(list2))
   private val sources = EndToEndPaths.setSrcVertices(graph)
 
-  override def partitionBy(): Graph[VD,ED] = { partitionBy(graph.edges.partitions.length) }
-
-  /**
-    * Partitioning the graph with input number of partitions
-    *
-    * @param numPartitions
-    * @return partitioned graph
-    */
-  override def partitionBy(numPartitions: PartitionID) = {
+  override def partitionBy() = {
     val pathInEdge = pathGraph.collect.map{ case(vid,pathList) =>
       val newPath = pathList.flatMap(path =>
         path.sliding(2).map(pair =>
@@ -61,7 +58,7 @@ class PathPartitionStrategy[VD: ClassTag,ED: ClassTag](override val graph: Graph
     ).toMap.getOrElse(src,numPartitions)
   }
 
-  def getVertices(numPartitions: PartitionID) = {
+  override def getVertices() = {
     val pathInVertex = pathGraph.collect.map{ case(vid,pathList) =>
       val newPath = pathList.flatMap(path =>
         path.map(id =>
