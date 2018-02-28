@@ -8,7 +8,9 @@ The SANSA-Rdf-Partition-Spark currently supports algorithms provided by followin
 * [Path Partitioning](http://ieeexplore.ieee.org/abstract/document/7113334/): Buwen Wu, Yongluan Zhou, Pingpeng Yuan, Ling Liu, and Hai Jin. Scalable sparql querying using path partitioning. In Data Engineering (ICDE), 2015 IEEE 31st International Conference on, pages 795–806. IEEE, 2015. (In construction)
 
 ## Example#1: Semantic Hash Partitioning
-Load [N-Triple file](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/resources/SilviaClustering_HairStylist_TaxiDriver.nt) to our example and apply a graph partitioning algorithm named Semantic Hash Partitioning. The example graph has in total 465 vertices and 499 edges, which is partitioned into 4 partitions. Firstly, we apply sementic hash partition using subject triple groups. The number of vertices and edges in each partition are shown in following table.
+Load [N-Triple file](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/resources/SilviaClustering_HairStylist_TaxiDriver.nt) to our example and apply a graph partitioning algorithm named Semantic Hash Partitioning. According to different type of triple groups, it has three sub algorithms - subject hash partition, object hash partition, subject object hash partition.
+
+The example graph has in total 465 vertices and 499 edges, which is partitioned into 4 partitions. Firstly, we apply [subject hash partition](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/scala/net/sansa_stack/rdf/partition/spark/algo/SubjectHashPartition.scala) using subject triple groups. The number of vertices and edges in each partition are shown in following table.
 
 | PartitionId | Edges after 1-hop | Edges after 2-hop | Edges after 3-hop |
 | :----- | :----- | :----- | :----- |
@@ -17,7 +19,7 @@ Load [N-Triple file](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/b
 | 2 | 174 | 323 | 331
 | 3 | 42 | 301 | 316
 
-Then we apply sementic hash partition by using object triple groups:
+Then we apply [object hash partition](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/scala/net/sansa_stack/rdf/partition/spark/algo/ObjectHashPartition.scala) by using object triple groups:
 
 | PartitionId | Edges after 1-hop | Edges after 2-hop | Edges after 3-hop |
 | :----- | :----- | :----- | :----- |
@@ -26,7 +28,7 @@ Then we apply sementic hash partition by using object triple groups:
 | 2 | 109 | 317 | 330 |
 | 3 | 56 | 297 | 312 |
 
-Finally, we apply semantic hash partition by using subject-object(so) triple groups:
+Finally, we apply [subject object hash partition](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/scala/net/sansa_stack/rdf/partition/spark/algo/SOHashPartition.scala) by using subject-object(so) triple groups:
 
 | PartitionId | Edges after 1-hop | Edges after 2-hop | Edges after 3-hop |
 | :----- | :----- | :----- | :----- |
@@ -37,8 +39,8 @@ Finally, we apply semantic hash partition by using subject-object(so) triple gro
 
 Semantic hash partition is suitable for star queries, however, partition applied by subject triple group can only ensure star queries whose core in the star has only outgoing edges, and same for partition applied by object triple group. Although partition applied by so triple group can solve the problem, in previous example we can find after 2-hop-expansion, the size of graph in each partition is close to original graph.
 
-## Example#2: Path Partitioning
-Load [N-Triple file](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/resources/Clustering_sampledata1.nt) as example rdf graph. The example graph is shown as follow:
+## Example#2: [Path Partitioning](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/scala/net/sansa_stack/rdf/partition/spark/example/PathPartitionExample.scala)
+Load [N-Triple file](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/resources/Clustering_sampledata1.nt) as example rdf graph and apply [path partition](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/scala/net/sansa_stack/rdf/partition/spark/algo/PathPartition.scala) algorithm. The example graph is shown as follow:
 
 <p align="center"> 
   <img src="https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/Figures/Graph%20for%20PP.jpg">
@@ -50,10 +52,19 @@ For Path Partitioning, it exacts end to end paths and generate path groups for e
   <img src="https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/Figures/Path%20Partition.jpg">
 </p>
 
-Same graph partitioned by semantic hash partition with 2 partitions:
+Same graph partitioned by semantic hash partition with 2 partitions using subject triple groups:
 
 <p align="center"> 
   <img src="https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/Figures/Semantic%20Hash%20Partition.jpg">
 </p>
 
 Remark: Currently path partition algorithm is unable to handle with graphs which has paths contain directed circle.
+
+## Example#3 [Evaluating Partition Algorithm](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/scala/net/sansa_stack/rdf/partition/spark/example/EvaluationExample.scala)
+Load [N-Triple file](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/resources/Clustering_sampledata1.nt) and apply [path partition](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/scala/net/sansa_stack/rdf/partition/spark/algo/PathPartition.scala) algorithm, [subject hash partition](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/scala/net/sansa_stack/rdf/partition/spark/algo/SubjectHashPartition.scala) algorithm, [object hash partition](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/scala/net/sansa_stack/rdf/partition/spark/algo/ObjectHashPartition.scala) and [so hash partition](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/scala/net/sansa_stack/rdf/partition/spark/algo/SOHashPartition.scala) algorithm. We use [partition algorithm metrics](https://github.com/CescWang1991/SANSA-Rdf-Partition-Spark/blob/master/src/main/scala/net/sansa_stack/rdf/partition/spark/evaluation/PartitionAlgoMetrics.scala) to evaluate partition algorithms:
+
+| PartitionId | PP | SHP | OHP | SOHP
+| :----- | :----- | :----- | :----- | :----- |
+| Duplication | 1.67 | 1.67 | 1.87 | 2.73 |
+| Balance | 1.44 | 1.6 | 1.71 | 1.27 |
+| Efficiency | 0.6 | 0.6 | 0.4 | 0 |
