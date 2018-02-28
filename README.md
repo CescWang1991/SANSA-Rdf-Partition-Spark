@@ -21,10 +21,10 @@ Then we apply sementic hash partition by using object triple groups:
 
 | PartitionId | Edges after 1-hop | Edges after 2-hop | Edges after 3-hop |
 | :----- | :----- | :----- | :----- |
-| 0 | 71 | 257 | 258 |
-| 1 | 212 | 385 | 385 |
-| 2 | 174 | 370 | 370 |
-| 3 | 42 | 255 | 257 |
+| 0 | 73 | 309 | 319 |
+| 1 | 261 | 307 | 307 |
+| 2 | 109 | 317 | 330 |
+| 3 | 56 | 297 | 312 |
 
 Finally, we apply semantic hash partition by using subject-object(so) triple groups:
 
