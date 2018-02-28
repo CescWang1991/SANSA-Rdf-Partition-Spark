@@ -1,6 +1,9 @@
 package net.sansa_stack.rdf.partition.spark.utils
 
-import org.apache.spark.graphx.{Graph, VertexId}
+import net.sansa_stack.rdf.partition.spark.utils.EndToEndPaths.Path
+import org.apache.spark.SparkContext
+import org.apache.spark.graphx.{Graph, VertexId, VertexRDD}
+
 import scala.reflect.ClassTag
 
 /**
@@ -15,24 +18,18 @@ object VertexAttribute {
 
   type attribute = (Int,List[VertexId])
 
-  /**
-    * Generate the vertex attribute for each vertex
-    *
-    * @tparam VD the vertex attribute type (not used in the computation)
-    * @tparam ED the edge attribute type (not used in the computation)
-    *
-    * @param graph the graph for which to generate attributes
-    * @return a graph where each vertex attribute is a tuple containing weight and start vertices list
-    */
-  def apply[VD: ClassTag,ED: ClassTag](graph: Graph[VD,ED], allPaths: EndToEndPaths.pathList): Graph[attribute,ED] = {
-
-    graph.mapVertices{ case(vid,_) =>  GenerateVertexAttribute(vid,allPaths)}
-  }
-
-  private def GenerateVertexAttribute(vid:VertexId,allPaths: EndToEndPaths.pathList): attribute = {
-    val vertexPaths = allPaths.filter(list=>list.contains(vid))
-    val vertexWeight = vertexPaths.length
-    val startVerticesList = vertexPaths.map(path=>path.head).distinct
-    (vertexWeight,startVerticesList)
+  def apply[VD: ClassTag,ED: ClassTag](
+      graph: Graph[VD,ED],
+      paths: VertexRDD[List[Path[ED]]],
+      sc:SparkContext): VertexRDD[attribute] = {
+    val broadcast = sc.broadcast(paths.collect())
+    graph.vertices.mapValues{ (vid,_) =>
+      val attr = broadcast.value.map{ case(src,list) =>
+        (src,list.count(path => path.count(e => e.dstId == vid) == 1))
+      }
+      val weight = attr.map{ case(_,num) => num }.sum
+      val srcList = attr.filter{ case(_,num) => num > 0 }.map{ case(src,_) => src }
+      (weight, srcList.toList)
+    }.filter{ case(_,attr) => attr._1 > 0 }
   }
 }

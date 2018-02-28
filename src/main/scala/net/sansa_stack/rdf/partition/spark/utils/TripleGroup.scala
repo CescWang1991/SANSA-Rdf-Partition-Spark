@@ -22,10 +22,10 @@ import scala.reflect.ClassTag
 class TripleGroup[VD,ED: ClassTag](graph: Graph[VD,ED], tgt:TripleGroupType) extends Serializable {
 
   graph.cache()
-  val ops = graph.ops
-  val direction = determineType()
-  val verticesGroupSet = setVerticesGroupSet()
-  val edgesGroupSet = setEdgesGroupSet()
+  private val ops = graph.ops
+  val direction: Option[EdgeDirection] = determineType()
+  val verticesGroupSet: VertexRDD[Array[(VertexId,VD)]] = setVerticesGroupSet()
+  val edgesGroupSet: VertexRDD[Array[Edge[ED]]] = setEdgesGroupSet()
 
   private def determineType(): Option[EdgeDirection] = {
     tgt match {
@@ -44,7 +44,3 @@ class TripleGroup[VD,ED: ClassTag](graph: Graph[VD,ED], tgt:TripleGroupType) ext
   }
 }
 
-object TripleGroupType extends Enumeration{
-  type TripleGroupType = Value
-  val s, o, so = Value
-}
