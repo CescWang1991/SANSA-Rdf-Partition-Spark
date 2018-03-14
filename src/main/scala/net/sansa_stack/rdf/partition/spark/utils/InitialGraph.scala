@@ -18,10 +18,11 @@ object InitialGraph extends Serializable {
     * @param path Path of RDF files
     * @return Graph[Node,Node].
     */
-  def apply (session: SparkSession,path: String): Graph[Node,Node]= {
+  def apply(session: SparkSession,path: String): Graph[Node,Node]= {
     val reader = NTripleReader.load (session, path) //Currently only support to load N-Triple files
     LoadGraph.apply (reader)
   }
+
   /**
     * Constructs GraphX graph as String from loading a RDF file
     * @param session Spark session
