@@ -54,10 +54,11 @@ class TriplePattern[VD,ED] extends EdgeTriplet[VD,ED] with Serializable {
     sub & pred & obj
   }
 
-  override def toString: String = (
+  /*override def toString: String = (
     (srcId, srcAttr, isVariable[VD](srcAttr)),
     (dstId, dstAttr, isVariable[VD](dstAttr)),
-    (attr, isVariable[ED](attr))).toString()
+    (attr, isVariable[ED](attr))).toString()*/
+  override def toString(): String = (srcAttr, attr, dstAttr).toString()
 }
 
 object TriplePattern {
