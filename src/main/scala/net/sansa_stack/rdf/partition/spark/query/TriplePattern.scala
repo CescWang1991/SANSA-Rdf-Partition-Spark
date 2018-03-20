@@ -2,6 +2,8 @@ package net.sansa_stack.rdf.partition.spark.query
 
 import org.apache.spark.graphx.{EdgeTriplet, VertexId}
 
+import scala.reflect.ClassTag
+
 /**
   * A basic notion in SPARQL where every part is either an RDF term or a variable.
   *
@@ -10,7 +12,7 @@ import org.apache.spark.graphx.{EdgeTriplet, VertexId}
   *
   * @author Zhe Wang
   */
-class TriplePattern[VD,ED] extends EdgeTriplet[VD,ED] with Serializable {
+class TriplePattern[VD: ClassTag, ED: ClassTag] extends EdgeTriplet[VD,ED] with Serializable {
 
   import TriplePattern._
 
@@ -54,16 +56,31 @@ class TriplePattern[VD,ED] extends EdgeTriplet[VD,ED] with Serializable {
     sub & pred & obj
   }
 
-  /*override def toString: String = (
-    (srcId, srcAttr, isVariable[VD](srcAttr)),
-    (dstId, dstAttr, isVariable[VD](dstAttr)),
-    (attr, isVariable[ED](attr))).toString()*/
-  override def toString(): String = (srcAttr, attr, dstAttr).toString()
+  def getVariable: Array[VD] = {
+    if(getSubject._3){
+      if(getObject._3){
+        Array(getSubject._2, getObject._2)
+      }
+      else{
+        Array(getSubject._2)
+      }
+    }
+    else{
+      if(getObject._3){
+        Array(getObject._2)
+      }
+      else{
+        Array()
+      }
+    }
+  }
+
+  override def toString(): String = ((srcId, srcAttr),(dstId, dstAttr),attr).toString()
 }
 
-object TriplePattern {
+object TriplePattern{
 
-  def apply[VD,ED] = new TriplePattern[VD,ED]
+  def apply[VD: ClassTag,ED: ClassTag] = new TriplePattern[VD,ED]
 
   /**
     * Check if the given attribute is a variable field or not.
@@ -71,7 +88,7 @@ object TriplePattern {
     * @param attr attribute to test with type T
     * @return True if the attribute startsWith "?", else false
     */
-  private def isVariable[T](attr: T): Boolean = {
+  def isVariable[T](attr: T): Boolean = {
     if (attr.toString.startsWith("?")) true
     else false
   }

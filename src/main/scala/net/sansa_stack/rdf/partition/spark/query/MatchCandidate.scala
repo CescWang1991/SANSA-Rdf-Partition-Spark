@@ -1,32 +1,47 @@
 package net.sansa_stack.rdf.partition.spark.query
 
-import net.sansa_stack.rdf.partition.spark.query.MatchCandidate.matchMap
-import org.apache.spark.graphx.EdgeTriplet
+import net.sansa_stack.rdf.partition.spark.query.MatchCandidate.vertexType
+import org.apache.spark.graphx.{EdgeTriplet, VertexId}
+
+import scala.reflect.ClassTag
 
 /**
   * A match candidate of a target triple is a map of a triple pattern to the target triple
   *
   * @param tp triple pattern to match
   * @param triple target triple
+  * @param vt determine the type of vertex(subject, object) to return the match candidate
   *
   * @tparam VD the type of the vertex attribute.
   * @tparam ED the type of the edge attribute
   *
   * @author Zhe Wang
   */
-class MatchCandidate[VD,ED](val triple: EdgeTriplet[VD,ED], val tp: TriplePattern[VD,ED]) extends Serializable {
-
-  import MatchCandidate._
+class MatchCandidate[VD: ClassTag, ED: ClassTag](
+    val triple: EdgeTriplet[VD,ED],
+    val tp: TriplePattern[VD,ED],
+    vt: vertexType) extends Serializable {
 
   val isMatch: Boolean = tp.isFulfilledByTriplet(triple)
-  val subjectMap = Map(tp.srcAttr->triple.srcAttr)
-  val objectMap = Map(tp.dstAttr->triple.dstAttr)
-  val subjectMatch: (VD, matchMap[VD,ED]) = (triple.srcAttr , (tp.srcAttr, subjectMap, objectMap, tp))
-  val objectMatch: (VD, matchMap[VD,ED]) = (triple.dstAttr , (tp.dstAttr, subjectMap, objectMap, tp))
+  def vertex: (VertexId, VD) = {
+    vt match {
+      case MatchCandidate.s => (triple.srcId, triple.srcAttr)
+      case MatchCandidate.o => (triple.dstId, triple.dstAttr)
+    }
+  }
+  def variable: VD = {
+    vt match {
+      case MatchCandidate.s => tp.srcAttr
+      case MatchCandidate.o => tp.dstAttr
+    }
+  }
+  val isVar: Boolean = TriplePattern.isVariable(variable)
+  val mapping: Map[VD,VD] = Map(tp.srcAttr->triple.srcAttr, tp.dstAttr->triple.dstAttr)
 
-  override def toString: String = (subjectMap, objectMap, triple.attr).toString
+  override def toString: String = (vertex, variable, mapping, tp).toString
 }
 
-object MatchCandidate{
-  type matchMap[VD,ED] = (VD, Map[VD,VD], Map[VD,VD], TriplePattern[VD,ED])
+object MatchCandidate extends Enumeration {
+  type vertexType = Value
+  val s,o = Value
 }
