@@ -1,4 +1,4 @@
-import net.sansa_stack.rdf.partition.spark.query.{MatchSet, TriplePattern}
+import net.sansa_stack.rdf.partition.spark.query.{GenerateSolutionMappings, MatchSet, TriplePattern}
 import net.sansa_stack.rdf.partition.spark.utils.InitialGraph
 import org.apache.spark.graphx.EdgeDirection
 import org.apache.spark.sql.SparkSession
@@ -31,8 +31,8 @@ object MatchTest {
 
     val ms = new MatchSet(graph,tpList,session)
     //ms.matchCandidateSet.collect().foreach(println(_))
-    //ms.matchTriplePattern.collect().foreach(println(_))
-    val localSet = ms.validateLocalMatchSet(ms.matchCandidateSet)//.collect().foreach(println(_))
-    ms.validateRemoteMatchSet(localSet).collect().foreach(println(_))
+    //val localSet = ms.validateLocalMatchSet(ms.matchCandidateSet)//.collect().foreach(println(_))
+    //ms.validateRemoteMatchSet(localSet).collect().foreach(println(_))
+    GenerateSolutionMappings.run(ms).foreach(println(_))
   }
 }
