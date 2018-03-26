@@ -1,10 +1,22 @@
 package net.sansa_stack.rdf.partition.spark.query
 
-import scala.collection.mutable.ArrayBuffer
 import scala.reflect.ClassTag
 
+/**
+  * Generate mappings from variables in sparql query to vertices in target rdf graph
+  *
+  * @author Zhe Wang
+  */
 object GenerateSolutionMappings {
 
+  /**
+    * run algorithm to generate solution mapping.
+    *
+    * @param ms match candidate set.
+    * @tparam VD the type of the vertex attribute.
+    * @tparam ED the type of the edge attribute.
+    * @return basic graph pattern mapping.
+    */
   def run[VD: ClassTag, ED: ClassTag](ms: MatchSet[VD,ED]): Array[Map[VD,VD]] = {
     var finalMatchSet = ms.matchCandidateSet
     var tempMatchSet = ms.matchCandidateSet

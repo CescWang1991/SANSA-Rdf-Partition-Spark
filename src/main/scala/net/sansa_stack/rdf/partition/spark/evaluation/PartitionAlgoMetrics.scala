@@ -9,9 +9,10 @@ import scala.reflect.ClassTag
   * Evaluator for partition strategy.
   *
   * @param ps Partition Strategy
-  *
   * @tparam VD the vertex attribute associated with each vertex in the set.
   * @tparam ED the edge attribute associated with each edge in the set.
+  *
+  * @author Zhe Wang
   */
 class PartitionAlgoMetrics[VD: ClassTag, ED: ClassTag](
     ps: PartitionAlgo[VD,ED]) extends Serializable{

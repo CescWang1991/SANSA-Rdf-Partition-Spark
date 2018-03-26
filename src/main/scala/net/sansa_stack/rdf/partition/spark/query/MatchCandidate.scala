@@ -6,14 +6,14 @@ import org.apache.spark.graphx.{EdgeTriplet, VertexId}
 import scala.reflect.ClassTag
 
 /**
-  * A match candidate of a target triple is a map of a triple pattern to the target triple
+  * A match candidate of a target triple is a map of a triple pattern to the target triple.
   *
-  * @param tp triple pattern to match
-  * @param triple target triple
-  * @param vt determine the type of vertex(subject, object) to return the match candidate
+  * @param tp triple pattern to match.
+  * @param triple target triple.
+  * @param vt determine the type of vertex(subject, object) to return the match candidate.
   *
   * @tparam VD the type of the vertex attribute.
-  * @tparam ED the type of the edge attribute
+  * @tparam ED the type of the edge attribute.
   *
   * @author Zhe Wang
   */

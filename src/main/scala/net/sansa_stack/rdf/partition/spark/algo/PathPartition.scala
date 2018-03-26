@@ -14,7 +14,6 @@ import scala.reflect.ClassTag
   * @param graph target graph to be partitioned
   * @param session spark session
   * @param numPartitions number of partitions
-  *
   * @tparam VD the vertex attribute associated with each vertex in the set.
   * @tparam ED the edge attribute associated with each edge in the set.
   *

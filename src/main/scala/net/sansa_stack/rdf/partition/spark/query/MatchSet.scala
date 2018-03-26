@@ -15,9 +15,10 @@ import scala.reflect.ClassTag
   * @param graph the target rdf graph
   * @param tpList list of triple patterns to match
   * @param session spark session
-  *
   * @tparam VD the type of the vertex attribute.
   * @tparam ED the type of the edge attribute
+  *
+  * @author Zhe Wang
   */
 class MatchSet[VD: ClassTag, ED: ClassTag](
     val graph: Graph[VD,ED],
@@ -34,6 +35,12 @@ class MatchSet[VD: ClassTag, ED: ClassTag](
     subjectMatchSet.++(objectMatchSet)
   }
 
+  /**
+    * Conform the validation of local match sets. Filter match sets which has local match.
+    *
+    * @param matchSet match candidate set of all vertices in rdf graph
+    * @return match candidate set after filter.
+    */
   def validateLocalMatchSet(matchSet: RDD[MatchCandidate[VD,ED]]): RDD[MatchCandidate[VD,ED]] = {
     val broadcast = session.sparkContext.broadcast(matchSet.collect())
     matchSet.filter{ mc =>  //foreach matchC1 2 v.matchS do
@@ -56,6 +63,11 @@ class MatchSet[VD: ClassTag, ED: ClassTag](
     }
   }
 
+  /**
+    * Conform the validation of remote match sets. Filter match sets which has remote match.
+    * @param matchSet match candidate set of all vertices in rdf graph.
+    * @return match candidate set after filter.
+    */
   def validateRemoteMatchSet(matchSet: RDD[MatchCandidate[VD,ED]]): RDD[MatchCandidate[VD,ED]] = {
     val broadcast = session.sparkContext.broadcast(matchSet.collect())
     val neighborBroadcast = session.sparkContext.broadcast(graph.ops.collectNeighbors(EdgeDirection.Either).collect())

@@ -1,9 +1,8 @@
 package net.sansa_stack.rdf.partition.spark.example
 
-import net.sansa_stack.rdf.partition.spark.algo.{ObjectHashPartition, SOHashPartition, SubjectHashPartition}
-import net.sansa_stack.rdf.partition.spark.utils.{InitialGraph, TripleGroupType}
+import net.sansa_stack.rdf.partition.spark.algo.SOHashPartition
+import net.sansa_stack.rdf.partition.spark.utils.InitialGraph
 import org.apache.spark.TaskContext
-import org.apache.spark.graphx.PartitionStrategy
 import org.apache.spark.sql.SparkSession
 
 object SemanticHashPartitionExample {

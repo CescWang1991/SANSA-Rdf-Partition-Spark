@@ -14,7 +14,6 @@ import scala.reflect.ClassTag
   * @param session spark session
   * @param numPartitions number of partitions
   * @param numIterations number of iterations
-  *
   * @tparam VD the vertex attribute associated with each vertex in the set.
   * @tparam ED the edge attribute associated with each edge in the set.
   *
