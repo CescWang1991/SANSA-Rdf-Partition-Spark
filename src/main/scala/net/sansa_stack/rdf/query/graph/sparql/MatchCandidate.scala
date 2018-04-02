@@ -1,6 +1,6 @@
-package net.sansa_stack.rdf.partition.spark.query
+package net.sansa_stack.rdf.query.graph.sparql
 
-import net.sansa_stack.rdf.partition.spark.query.MatchCandidate.vertexType
+import MatchCandidate.vertexType
 import org.apache.spark.graphx.{EdgeTriplet, VertexId}
 
 import scala.reflect.ClassTag

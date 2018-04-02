@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.partition.spark.query
+package net.sansa_stack.rdf.query.graph.sparql
 
 import org.apache.spark.graphx.{EdgeDirection, Graph, VertexId}
 import org.apache.spark.rdd.RDD

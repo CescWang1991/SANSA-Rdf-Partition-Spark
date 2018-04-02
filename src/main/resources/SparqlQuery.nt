@@ -1,2 +1,0 @@
-?user <http://twitter/follows> <http://twitter/user3> .
-<http://twitter/user3> <http://twitter/follows> ?follower .

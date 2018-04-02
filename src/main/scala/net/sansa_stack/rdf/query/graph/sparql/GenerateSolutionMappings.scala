@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.partition.spark.query
+package net.sansa_stack.rdf.query.graph.sparql
 
 import scala.reflect.ClassTag
 

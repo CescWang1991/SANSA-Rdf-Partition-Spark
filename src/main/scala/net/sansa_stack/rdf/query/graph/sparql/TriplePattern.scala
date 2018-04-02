@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.partition.spark.query
+package net.sansa_stack.rdf.query.graph.sparql
 
 import org.apache.spark.graphx.{EdgeTriplet, VertexId}
 
@@ -12,17 +12,21 @@ import scala.reflect.ClassTag
   *
   * @author Zhe Wang
   */
-class TriplePattern[VD: ClassTag, ED: ClassTag] extends EdgeTriplet[VD,ED] with Serializable {
+class TriplePattern[VD: ClassTag, ED: ClassTag](t:VD, p: ED, o: VD) extends Serializable {
 
   import TriplePattern._
+
+  val srcAttr: VD = t
+  val attr: ED = p
+  val dstAttr: VD = o
 
   /**
     * Get the subject of this query triple
     *
     * @return a tuple (subject attribute, is variable)
     */
-  def getSubject: (VertexId, VD, Boolean) = {
-    (srcId, srcAttr, isVariable[VD](srcAttr))
+  def getSubject: (VD, Boolean) = {
+    (srcAttr, isVariable[VD](srcAttr))
   }
 
   /**
@@ -30,8 +34,8 @@ class TriplePattern[VD: ClassTag, ED: ClassTag] extends EdgeTriplet[VD,ED] with 
     *
     * @return a tuple (object attribute, is variable)
     */
-  def getObject: (VertexId, VD, Boolean) = {
-    (dstId, dstAttr, isVariable[VD](dstAttr))
+  def getObject: (VD, Boolean) = {
+    (dstAttr, isVariable[VD](dstAttr))
   }
 
   /**
@@ -50,24 +54,24 @@ class TriplePattern[VD: ClassTag, ED: ClassTag] extends EdgeTriplet[VD,ED] with 
     * @return true iff subject, predicate and object fulfill this triple
     */
   def isFulfilledByTriplet(triplet: EdgeTriplet[VD,ED]): Boolean = {
-    val sub = checkQueryPart[VD]((getSubject._2, getSubject._3), triplet.srcAttr)
+    val sub = checkQueryPart[VD]((srcAttr, isVariable[VD](srcAttr)), triplet.srcAttr)
     val pred = checkQueryPart[ED](getPredicate, triplet.attr)
-    val obj = checkQueryPart[VD]((getObject._2, getObject._3), triplet.dstAttr)
+    val obj = checkQueryPart[VD]((dstAttr, isVariable[VD](srcAttr)), triplet.dstAttr)
     sub & pred & obj
   }
 
   def getVariable: Array[VD] = {
-    if(getSubject._3){
-      if(getObject._3){
-        Array(getSubject._2, getObject._2)
+    if(isVariable[VD](srcAttr)){
+      if(isVariable[VD](dstAttr)){
+        Array(srcAttr, dstAttr)
       }
       else{
-        Array(getSubject._2)
+        Array(srcAttr)
       }
     }
     else{
-      if(getObject._3){
-        Array(getObject._2)
+      if(isVariable[VD](dstAttr)){
+        Array(dstAttr)
       }
       else{
         Array()
@@ -75,12 +79,10 @@ class TriplePattern[VD: ClassTag, ED: ClassTag] extends EdgeTriplet[VD,ED] with 
     }
   }
 
-  override def toString(): String = ((srcId, srcAttr),(dstId, dstAttr),attr).toString()
+  override def toString(): String = (srcAttr, dstAttr, attr).toString()
 }
 
 object TriplePattern{
-
-  def apply[VD: ClassTag,ED: ClassTag] = new TriplePattern[VD,ED]
 
   /**
     * Check if the given attribute is a variable field or not.
