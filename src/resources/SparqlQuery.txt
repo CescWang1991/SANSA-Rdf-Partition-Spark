@@ -1,4 +1,3 @@
-PREFIX  tw:  <http://twitter/>
 SELECT  ?user ?follower
-WHERE{  ?user tw:follows tw:user1 .
-        tw:user1 tw:follows ?follower . }
+WHERE   { ?user <http://twitter/follows> <http://twitter/user1> .
+          <http://twitter/user1> <http://twitter/follows> ?follower . }

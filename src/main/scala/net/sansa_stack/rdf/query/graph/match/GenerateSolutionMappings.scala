@@ -1,4 +1,9 @@
-package net.sansa_stack.rdf.query.graph.sparql
+package net.sansa_stack.rdf.query.graph.`match`
+
+import net.sansa_stack.rdf.query.graph.parser.{BasicGraphPattern, TriplePattern}
+import org.apache.spark.graphx.Graph
+import org.apache.spark.rdd.RDD
+import org.apache.spark.sql.SparkSession
 
 import scala.reflect.ClassTag
 
@@ -12,12 +17,18 @@ object GenerateSolutionMappings {
   /**
     * run algorithm to generate solution mapping.
     *
-    * @param ms match candidate set.
+    * @param rdfGraph rdf graph to query.
+    * @param triplePattern collection of sparql triple patterns
+    *
     * @tparam VD the type of the vertex attribute.
     * @tparam ED the type of the edge attribute.
     * @return basic graph pattern mapping.
     */
-  def run[VD: ClassTag, ED: ClassTag](ms: MatchSet[VD,ED]): Array[Map[VD,VD]] = {
+  def run[VD: ClassTag, ED: ClassTag](rdfGraph: Graph[VD, ED],
+      triplePattern: RDD[TriplePattern[VD, ED]],
+      session: SparkSession): Array[Map[VD,VD]] = {
+
+    val ms = new MatchSet(rdfGraph, triplePattern.collect(), session)
     var finalMatchSet = ms.matchCandidateSet
     var tempMatchSet = ms.matchCandidateSet
     var changed = true

@@ -1,5 +1,5 @@
 import net.sansa_stack.rdf.partition.spark.utils.InitialGraph
-import net.sansa_stack.rdf.query.graph.sparql.{GenerateSolutionMappings, MatchSet, TriplePattern}
+import net.sansa_stack.rdf.query.graph.`match`.{GenerateSolutionMappings, MatchSet}
 import org.apache.spark.graphx.EdgeDirection
 import org.apache.spark.sql.SparkSession
 

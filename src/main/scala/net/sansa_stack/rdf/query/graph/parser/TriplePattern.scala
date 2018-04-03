@@ -1,6 +1,6 @@
-package net.sansa_stack.rdf.query.graph.sparql
+package net.sansa_stack.rdf.query.graph.parser
 
-import org.apache.spark.graphx.{EdgeTriplet, VertexId}
+import org.apache.spark.graphx.EdgeTriplet
 
 import scala.reflect.ClassTag
 
