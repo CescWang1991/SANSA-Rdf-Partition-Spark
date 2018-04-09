@@ -1,9 +1,9 @@
-package net.sansa_stack.rdf.query.graph.`match`
+package net.sansa_stack.rdf.query.graph.matching
 
 import org.apache.spark.graphx.{EdgeDirection, Graph, VertexId}
 import org.apache.spark.rdd.RDD
 import MatchCandidate._
-import net.sansa_stack.rdf.query.graph.parser.TriplePattern
+import net.sansa_stack.rdf.query.graph.util.TriplePattern
 import org.apache.spark.sql.SparkSession
 
 import scala.util.control.Breaks._
