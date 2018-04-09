@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.query.graph.parser
+package net.sansa_stack.rdf.query.graph.util
 
 import org.apache.spark.graphx.EdgeTriplet
 
@@ -83,6 +83,8 @@ class TriplePattern[VD: ClassTag, ED: ClassTag](t:VD, p: ED, o: VD) extends Seri
 }
 
 object TriplePattern{
+
+  def apply[VD: ClassTag, ED: ClassTag](t: VD, p: ED, o: VD): TriplePattern[VD,ED] = new TriplePattern(t, p, o)
 
   /**
     * Check if the given attribute is a variable field or not.

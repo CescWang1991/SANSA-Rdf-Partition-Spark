@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.query.graph.parser
+package net.sansa_stack.rdf.query.graph.util
 
 import org.slf4j.LoggerFactory
 import scala.collection.mutable.ArrayBuffer

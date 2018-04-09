@@ -1,6 +1,6 @@
-package net.sansa_stack.rdf.query.graph.`match`
+package net.sansa_stack.rdf.query.graph.matching
 
-import net.sansa_stack.rdf.query.graph.parser.{BasicGraphPattern, TriplePattern}
+import net.sansa_stack.rdf.query.graph.util.{BasicGraphPattern, TriplePattern}
 import org.apache.spark.graphx.Graph
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession

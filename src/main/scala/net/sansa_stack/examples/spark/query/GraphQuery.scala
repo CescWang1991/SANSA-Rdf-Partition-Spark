@@ -1,7 +1,7 @@
 package net.sansa_stack.examples.spark.query
 
-import net.sansa_stack.rdf.query.graph.`match`.GenerateSolutionMappings
-import net.sansa_stack.rdf.query.graph.parser.BasicGraphPattern
+import net.sansa_stack.rdf.query.graph.matching.GenerateSolutionMappings
+import net.sansa_stack.rdf.query.graph.util.BasicGraphPattern
 import net.sansa_stack.rdf.spark.graph.LoadGraph
 import net.sansa_stack.rdf.spark.io.NTripleReader
 import org.apache.spark.sql.SparkSession

@@ -1,7 +1,7 @@
-package net.sansa_stack.rdf.query.graph.`match`
+package net.sansa_stack.rdf.query.graph.matching
 
 import MatchCandidate.vertexType
-import net.sansa_stack.rdf.query.graph.parser.TriplePattern
+import net.sansa_stack.rdf.query.graph.util.TriplePattern
 import org.apache.spark.graphx.{EdgeTriplet, VertexId}
 
 import scala.reflect.ClassTag

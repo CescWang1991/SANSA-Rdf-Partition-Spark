@@ -1,7 +1,7 @@
 import java.io.ByteArrayInputStream
 
 import net.sansa_stack.rdf.partition.spark.utils.InitialGraph
-import net.sansa_stack.rdf.query.graph.parser.BasicGraphPattern
+import net.sansa_stack.rdf.query.graph.util.BasicGraphPattern
 import org.apache.spark.sql.SparkSession
 
 object TripleReaderTest {

@@ -20,6 +20,22 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: com.thoughtworks.paranamer:paranamer:2.3" level="project" />
+    <orderEntry type="library" name="Maven: com.google.guava:guava:16.0.1" level="project" />
+    <orderEntry type="library" name="Maven: commons-configuration:commons-configuration:1.6" level="project" />
+    <orderEntry type="library" name="Maven: commons-beanutils:commons-beanutils:1.7.0" level="project" />
+    <orderEntry type="library" name="Maven: org.apache.tinkerpop:gremlin-groovy:3.2.3" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy:indy:2.4.7" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-groovysh:indy:2.4.7" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy:2.4.7" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-console:2.4.7" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-swing:2.4.7" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-templates:2.4.7" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-xml:2.4.7" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-json:indy:2.4.7" level="project" />
+    <orderEntry type="library" name="Maven: org.codehaus.groovy:groovy-jsr223:indy:2.4.7" level="project" />
+    <orderEntry type="library" name="Maven: com.github.jeremyh:jBCrypt:jbcrypt-0.4" level="project" />
+    <orderEntry type="library" name="scala-sdk-2.11.8" level="application" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.11.8" level="project" />
     <orderEntry type="library" name="Maven: org.apache.spark:spark-core_2.11:2.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.avro:avro:1.7.7" level="project" />
@@ -545,6 +561,5 @@
     <orderEntry type="library" name="Maven: org.scala-lang.modules:scala-xml_2.11:1.0.2" level="project" />
     <orderEntry type="library" name="Maven: com.typesafe.scala-logging:scala-logging-slf4j_2.11:2.1.2" level="project" />
     <orderEntry type="library" name="Maven: com.typesafe.scala-logging:scala-logging-api_2.11:2.1.2" level="project" />
-    <orderEntry type="library" name="scala-sdk-2.11.8" level="application" />
   </component>
 </module>

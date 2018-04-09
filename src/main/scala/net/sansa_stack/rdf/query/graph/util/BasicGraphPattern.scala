@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.query.graph.parser
+package net.sansa_stack.rdf.query.graph.util
 
 import org.apache.jena.graph.{Node, Triple}
 import org.apache.spark.SparkContext
