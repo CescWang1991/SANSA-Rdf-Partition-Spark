@@ -56,7 +56,7 @@ class TriplePattern[VD: ClassTag, ED: ClassTag](t:VD, p: ED, o: VD) extends Seri
   def isFulfilledByTriplet(triplet: EdgeTriplet[VD,ED]): Boolean = {
     val sub = checkQueryPart[VD]((srcAttr, isVariable[VD](srcAttr)), triplet.srcAttr)
     val pred = checkQueryPart[ED](getPredicate, triplet.attr)
-    val obj = checkQueryPart[VD]((dstAttr, isVariable[VD](srcAttr)), triplet.dstAttr)
+    val obj = checkQueryPart[VD]((dstAttr, isVariable[VD](dstAttr)), triplet.dstAttr)
     sub & pred & obj
   }
 

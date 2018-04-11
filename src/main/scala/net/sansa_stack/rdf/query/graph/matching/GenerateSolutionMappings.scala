@@ -1,6 +1,6 @@
 package net.sansa_stack.rdf.query.graph.matching
 
-import net.sansa_stack.rdf.query.graph.util.{BasicGraphPattern, TriplePattern}
+import net.sansa_stack.rdf.query.graph.util.TriplePattern
 import org.apache.spark.graphx.Graph
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
@@ -26,7 +26,7 @@ object GenerateSolutionMappings {
     */
   def run[VD: ClassTag, ED: ClassTag](rdfGraph: Graph[VD, ED],
       triplePattern: RDD[TriplePattern[VD, ED]],
-      session: SparkSession): Array[Map[VD,VD]] = {
+      session: SparkSession): Array[Map[VD, VD]] = {
 
     val ms = new MatchSet(rdfGraph, triplePattern.collect(), session)
     var finalMatchSet = ms.matchCandidateSet

@@ -47,7 +47,7 @@ class MatchSet[VD: ClassTag, ED: ClassTag](
     matchSet.filter{ mc =>  //foreach matchC1 2 v.matchS do
       var exists = true
       breakable{
-        tpList.filterNot(_.equals(mc.triple)).foreach { tp => //foreach tp 2 BGP != matchC1.tp do
+        tpList.filterNot(_.equals(mc.tp)).foreach { tp => //foreach tp 2 BGP != matchC1.tp do
           if (tp.getVariable.contains(mc.variable)) {
             val localMatchSet = broadcast.value.filter(_.vertex.equals(mc.vertex))
             val numOfExist = localMatchSet.count{ mc2 =>
