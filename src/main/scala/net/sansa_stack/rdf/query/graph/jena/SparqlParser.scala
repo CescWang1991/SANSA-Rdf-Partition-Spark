@@ -1,11 +1,11 @@
 package net.sansa_stack.rdf.query.graph.jena
 
-import net.sansa_stack.rdf.query.graph.util.graphOp._
+import net.sansa_stack.rdf.query.graph.jena.graphOp._
 import org.apache.jena.query.QueryFactory
 import org.apache.jena.graph.Triple
-import org.apache.jena.sparql.algebra.{Algebra, Op, OpVisitorBase, OpWalker}
+import org.apache.jena.sparql.algebra.{Algebra, OpVisitorBase, OpWalker}
 import org.apache.jena.sparql.algebra.op._
-import org.apache.jena.sparql.syntax.{ElementGroup, ElementTriplesBlock}
+import org.apache.jena.sparql.syntax.ElementTriplesBlock
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable
@@ -24,6 +24,7 @@ class SparqlParser(path: String) extends OpVisitorBase{
   private val op = Algebra.compile(query)
   private var groupOp = mutable.Queue[GraphOp]()
   private val elementTriples = new ElementTriplesBlock()
+  var filter: OpFilter = _
 
   def OpVisitorWalker(): Unit = {
     OpWalker.walk(op, this)
@@ -38,18 +39,7 @@ class SparqlParser(path: String) extends OpVisitorBase{
 
   override def visit(opFilter: OpFilter): Unit = {
     groupOp += new GraphFilter(opFilter)
-  }
-
-  override def visit(opDistinct: OpDistinct): Unit = {
-    groupOp += new GraphDistinct(opDistinct)
-  }
-
-  override def visit(opUnion: OpUnion): Unit = {
-    groupOp += new GraphUnion(opUnion)
-  }
-
-  override def visit(opOrder: OpOrder): Unit = {
-    groupOp += new GraphOrder(opOrder)
+    filter = opFilter
   }
 
   def getGroupOp: mutable.Queue[GraphOp] = {

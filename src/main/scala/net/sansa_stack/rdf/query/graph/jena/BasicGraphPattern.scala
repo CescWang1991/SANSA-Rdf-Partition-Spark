@@ -1,6 +1,6 @@
 package net.sansa_stack.rdf.query.graph.jena
 
-import net.sansa_stack.rdf.query.graph.util.TriplePattern
+import net.sansa_stack.rdf.query.graph.matching.util.TriplePattern
 import net.sansa_stack.rdf.spark.graph.LoadGraph
 import org.apache.jena.graph.{Node, Triple}
 import org.apache.spark.SparkContext

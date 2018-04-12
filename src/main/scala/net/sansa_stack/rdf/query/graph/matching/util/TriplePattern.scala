@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.query.graph.util
+package net.sansa_stack.rdf.query.graph.matching.util
 
 import org.apache.spark.graphx.EdgeTriplet
 
