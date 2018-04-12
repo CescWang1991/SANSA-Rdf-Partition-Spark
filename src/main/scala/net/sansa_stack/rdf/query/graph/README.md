@@ -15,10 +15,10 @@ WHERE {
 ```
 We exact the basic graph pattern from the SPARQL file and generate Graph[Node, Node], in which has three vertices RDD((0, "?user"), (1, "<http://twitter/user1>"), (2, "?follower")) and two edges RDD((0, 1, <http://twitter/follows>), (1, 2, <http://twitter/follows>)). The steps to generate basic graph pattern is like:
 ```scala
-val session = SparkSession.builder().master("local[*]").getOrCreate()       \\ Initialize spark session
-val sarqlParser = new SparqlParser(path)                                    \\ Initialize sparql parser with the path to sparql file 
-sp.OpVisitorWalker()                                                        \\ Walk the query
-val bgp = BasicGraphPattern(sp.getElementTriples, session.sparkContext)     \\ Get basic graph pattern and generate a graph
+val session = SparkSession.builder().master("local[*]").getOrCreate()       // Initialize spark session
+val sarqlParser = new SparqlParser(path)                                    // Initialize sparql parser with the path to sparql file 
+sp.OpVisitorWalker()                                                        // Walk the query
+val bgp = BasicGraphPattern(sp.getElementTriples, session.sparkContext)     // Get basic graph pattern and generate a graph
 ```
 Class [SparqlParser](jena/SparqlParser.scala) will walk the SPARQL query and from which we get a set of triple patterns.
 
