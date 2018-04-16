@@ -6,6 +6,8 @@ import org.apache.spark.rdd.RDD
 
 trait ExprFilter extends Serializable {
 
-  def evaluation(solutionMapping: RDD[Map[Node, Node]]): Boolean
+  def evaluate(solution: Map[Node, Node]): Boolean
+
+  def getTag: String
 
 }

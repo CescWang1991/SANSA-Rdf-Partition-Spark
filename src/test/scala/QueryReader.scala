@@ -1,3 +1,4 @@
+import net.sansa_stack.rdf.query.graph.jena.graphOp.GraphFilter
 import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, ExprParser, SparqlParser}
 import net.sansa_stack.rdf.query.graph.matching._
 import net.sansa_stack.rdf.spark.graph.LoadGraph
@@ -25,10 +26,10 @@ object QueryReader {
     val bgp = BasicGraphPattern(sp.getElementTriples, session.sparkContext)
     val graph = LoadGraph.apply (NTripleReader.load (session, ntPath))
 
-    val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
+    val solutionMapping = session.sparkContext.parallelize(GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session))
     //solutionMapping.foreach(println(_))
-    //println(solutionMapping.head.map{ case(k, v) => NodeValue.makeNode(v) }.toList)
-    val exprFilter = sp.filter.getExprs.head
-
+    var intermediate = solutionMapping
+    sp.getGroupOp.foreach(op => intermediate = op.execute(intermediate))
+    intermediate.foreach(println(_))
   }
 }

@@ -18,13 +18,12 @@ import scala.io.Source
   *
   * @author Zhe Wang
   */
-class SparqlParser(path: String) extends OpVisitorBase{
+class SparqlParser(path: String) extends OpVisitorBase with Serializable {
 
   private val query = QueryFactory.create(Source.fromFile(path).mkString)
   private val op = Algebra.compile(query)
   private var groupOp = mutable.Queue[GraphOp]()
   private val elementTriples = new ElementTriplesBlock()
-  var filter: OpFilter = _
 
   def OpVisitorWalker(): Unit = {
     OpWalker.walk(op, this)
@@ -39,7 +38,6 @@ class SparqlParser(path: String) extends OpVisitorBase{
 
   override def visit(opFilter: OpFilter): Unit = {
     groupOp += new GraphFilter(opFilter)
-    filter = opFilter
   }
 
   def getGroupOp: mutable.Queue[GraphOp] = {
