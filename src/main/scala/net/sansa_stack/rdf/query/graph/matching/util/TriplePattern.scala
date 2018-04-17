@@ -79,6 +79,10 @@ class TriplePattern[VD: ClassTag, ED: ClassTag](t:VD, p: ED, o: VD) extends Seri
     }
   }
 
+  def compares(obj: TriplePattern[VD, ED]): Boolean = {
+    this.srcAttr.equals(obj.srcAttr) && this.attr.equals(obj.attr) && this.dstAttr.equals(obj.dstAttr)
+  }
+
   override def toString(): String = (srcAttr, dstAttr, attr).toString()
 }
 

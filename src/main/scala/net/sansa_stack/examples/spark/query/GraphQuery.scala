@@ -9,7 +9,7 @@ import org.apache.spark.sql.SparkSession
 object GraphQuery {
   def main(args: Array[String]): Unit = {
     val ntPath = "src/resources/Clustering_sampledata.nt"
-    val sqPath = "src/resources/QueryFull.txt"
+    val sqPath = "src/resources/QueryBasic.txt"
     val session = SparkSession.builder()
       .master("local[*]")
       .appName("SANSA - Graph Query")

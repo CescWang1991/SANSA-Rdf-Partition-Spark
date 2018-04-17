@@ -1,9 +1,0 @@
-SELECT DISTINCT ?user ?follower
-WHERE {
-  { ?user <http://twitter/follows> <http://twitter/user1> .
-    <http://twitter/user1> <http://twitter/follows> ?follower .
-    FILTER regex(?follower, <http://twitter/user2>)
-  }
-  UNION
-  { <http://twitter/user5> <http://twitter/follows> ?follower . }
-} ORDER BY (?follower)

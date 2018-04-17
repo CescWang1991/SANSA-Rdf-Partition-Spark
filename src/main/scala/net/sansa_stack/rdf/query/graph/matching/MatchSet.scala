@@ -51,7 +51,7 @@ class MatchSet[VD: ClassTag, ED: ClassTag](
           if (tp.getVariable.contains(mc.variable)) {
             val localMatchSet = broadcast.value.filter(_.vertex.equals(mc.vertex))
             val numOfExist = localMatchSet.count{ mc2 =>
-              mc2.tp.equals(tp) && mc2.variable.equals(mc.variable) && compatible(mc2.mapping, mc.mapping)
+              mc2.tp.compares(tp) && mc2.variable.equals(mc.variable) && compatible(mc2.mapping, mc.mapping)
             }
             if (numOfExist == 0) {
               exists = false
@@ -80,7 +80,7 @@ class MatchSet[VD: ClassTag, ED: ClassTag](
           val neighbors = neighborBroadcast.value.filter{ case(vid,_) => vid == mc.vertex._1 }.head._2
           val remoteMatchSet = broadcast.value.filter(mc1 => neighbors.contains(mc1.vertex))
           val numOfExist = remoteMatchSet.count{ mc2 =>
-            mc2.variable.equals(var2.head) && mc2.tp.equals(mc.tp) && compatible(mc2.mapping, mc.mapping)
+            mc2.variable.equals(var2.head) && mc2.tp.compares(mc.tp) && compatible(mc2.mapping, mc.mapping)
           }
           if (numOfExist == 0) {
             exists = false

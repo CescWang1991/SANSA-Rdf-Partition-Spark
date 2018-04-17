@@ -33,6 +33,11 @@ class GraphFilter(val op: OpFilter) extends GraphOp with Serializable {
     output
   }
 
+  def test(): Unit = {
+    val exprParser = new ExprParser(expr)
+    exprParser.exprVisitorWalker()
+  }
+
   override def getTag: String = { tag }
 
   override def getExpr: ExprList = { expr }

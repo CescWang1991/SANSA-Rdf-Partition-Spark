@@ -1,6 +1,6 @@
 package net.sansa_stack.rdf.query.graph.jena
 
-import net.sansa_stack.rdf.query.graph.jena.expression.{ExprFilter, ExprRegex}
+import net.sansa_stack.rdf.query.graph.jena.expression.{ExprFilter, ExprCompare, ExprRegex}
 import org.apache.jena.graph.Node
 import org.apache.jena.sparql.algebra.walker.{ExprVisitorFunction, Walker}
 import org.apache.jena.sparql.expr._
@@ -33,6 +33,19 @@ class ExprParser(exprs: ExprList) extends ExprVisitorFunction with Serializable 
 
   override def visit(func: ExprFunction2): Unit = {
     println(func+":ExprFunction2")
+    func match {
+      case e: E_Equals =>
+        exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Equals")
+      case e: E_GreaterThan =>
+        exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Greater Than")
+      case e: E_GreaterThanOrEqual =>
+        exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Greater Than Or Equal")
+      case e: E_LessThan =>
+        exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Less Than")
+      case e: E_LessThanOrEqual =>
+        exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Less Than Or Equal")
+      case _ =>  throw new UnsupportedOperationException("Not support the expression of ExprFunction2")
+    }
   }
 
   override def visit(func: ExprFunction3): Unit = {
@@ -40,10 +53,9 @@ class ExprParser(exprs: ExprList) extends ExprVisitorFunction with Serializable 
   }
 
   override def visit(func: ExprFunctionN): Unit = {
+    println(func+":ExprFunctionN")
     func match {
-      case e: E_Regex => println(e+":ExprFunctionN")
-        exprFilterGroup += new ExprRegex(left.pop(), right.pop())
-
+      case e: E_Regex => exprFilterGroup += new ExprRegex(left.pop(), right.pop())
       case _ =>  throw new UnsupportedOperationException("Not support the expression of ExprFunctionN")
     }
   }
