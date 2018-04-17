@@ -43,3 +43,17 @@ WHERE {
     FILTER regex(?follower, tw:user2)
 }
 ```
+Warn: Currently only support RDF terms equal.
+
+### Example: Filter Compare<a name="Compare"></a>
+```sparql
+PREFIX tw: <http://twitter/>
+PREFIX ex: <http://example.org/>
+SELECT ?user ?age
+WHERE {
+    ?user tw:follows tw:user7 .
+    ?user ex:age ?age .
+    FILTER (?age <= 12)
+}
+```
+Note: Support comparisions include Equals(==), GreaterThanOrEqual(>=), GreaterThan(>), LessThanOrEqual(<=), LessThan(<).
