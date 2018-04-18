@@ -1,8 +1,0 @@
-PREFIX tw: <http://twitter/>
-PREFIX ex: <http://example.org/>
-SELECT ?user ?age
-WHERE {
-    ?user tw:follows tw:user7 .
-    ?user ex:age ?age .
-    FILTER (?age <= 12)
-}

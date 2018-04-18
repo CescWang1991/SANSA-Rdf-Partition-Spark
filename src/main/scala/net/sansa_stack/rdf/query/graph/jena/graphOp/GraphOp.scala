@@ -11,9 +11,7 @@ import org.apache.spark.rdd.RDD
   */
 trait GraphOp extends Serializable {
 
-  def execute(input: RDD[Map[Node, Node]]): RDD[Map[Node, Node]]
+  def execute(input: Array[Map[Node, Node]]): Array[Map[Node, Node]]
 
   def getTag: String
-
-  def getExpr: ExprList
 }

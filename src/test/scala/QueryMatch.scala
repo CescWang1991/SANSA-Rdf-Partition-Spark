@@ -7,7 +7,7 @@ import org.apache.spark.sql.SparkSession
 
 object QueryMatch {
   def main(args: Array[String]): Unit = {
-    val spPath = "src/resources/Sparql/QueryFilter.txt"
+    val spPath = "src/resources/Sparql/FilterRegex.txt"
     val ntPath = "src/resources/Rdf/Clustering_sampledata.nt"
     val session = SparkSession.builder().master("local[*]").getOrCreate()
 
@@ -18,13 +18,14 @@ object QueryMatch {
 
     //bgp.tripleRDD.collect().foreach(println(_))
     //graph.triplets.collect().foreach(println(_))
-    val solutionMapping = session.sparkContext.parallelize(GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session))
+    val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
     solutionMapping.foreach(println(_))
 
     //val ms = new MatchSet[Node, Node](graph, bgp.triplePatterns.collect(), session)
     //ms.matchCandidateSet.collect().foreach(println(_))
     //println("------------------------------------")
     //ms.validateLocalMatchSet(ms.matchCandidateSet).collect().foreach(println(_))
-    //ms.validateRemoteMatchSet(ms.validateLocalMatchSet(ms.matchCandidateSet)).collect().foreach(println(_))
+    //val matchSet =
+    //ms.validateRemoteMatchSet(ms.validateLocalMatchSet(ms.matchCandidateSet))//.collect().foreach(println(_))
   }
 }

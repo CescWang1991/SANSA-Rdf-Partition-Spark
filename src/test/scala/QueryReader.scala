@@ -1,4 +1,4 @@
-import net.sansa_stack.rdf.query.graph.jena.graphOp.GraphFilter
+import net.sansa_stack.rdf.query.graph.jena.graphOp.{GraphFilter, GraphProject}
 import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, ExprParser, SparqlParser}
 import net.sansa_stack.rdf.query.graph.matching._
 import net.sansa_stack.rdf.spark.graph.LoadGraph
@@ -17,7 +17,7 @@ import scala.io.Source
 
 object QueryReader {
   def main(args: Array[String]): Unit = {
-    val spPath = "src/resources/Sparql/QueryFilter.txt"
+    val spPath = "src/resources/Sparql/GraphPattern.txt"
     val ntPath = "src/resources/Rdf/Clustering_sampledata.nt"
     val session = SparkSession.builder().master("local[*]").getOrCreate()
 
@@ -26,11 +26,12 @@ object QueryReader {
     val bgp = BasicGraphPattern(sp.getElementTriples, session.sparkContext)
     val graph = LoadGraph.apply (NTripleReader.load (session, ntPath))
 
-    val solutionMapping = session.sparkContext.parallelize(GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session))
-    solutionMapping.collect().foreach(println(_))
-    println("---------After filter---------")
-    //sp.getGroupOp.head.asInstanceOf[GraphFilter].test()
+    //sp.getElementTriples.foreach(println(_))
+    //sp.getGroupOp.head.asInstanceOf[GraphProject].test()
 
+    val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
+    solutionMapping.foreach(println(_))
+    println("---------After filter---------")
     var intermediate = solutionMapping
     sp.getGroupOp.foreach(op => intermediate = op.execute(intermediate))
     intermediate.foreach(println(_))

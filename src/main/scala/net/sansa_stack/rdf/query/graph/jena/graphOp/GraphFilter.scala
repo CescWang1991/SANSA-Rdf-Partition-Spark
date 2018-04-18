@@ -12,7 +12,7 @@ import scala.collection.JavaConversions._
   * Class that execute SPARQL FILTER operation
   * @param op FILTER operation
   */
-class GraphFilter(val op: OpFilter) extends GraphOp with Serializable {
+class GraphFilter(val op: OpFilter) extends GraphOp {
 
   private val tag = "FILTER"
   private val expr = op.getExprs
@@ -22,7 +22,7 @@ class GraphFilter(val op: OpFilter) extends GraphOp with Serializable {
     * @param input solution mapping to be filtered
     * @return solution mapping after filtering
     */
-  override def execute(input: RDD[Map[Node, Node]]): RDD[Map[Node, Node]] = {
+  override def execute(input: Array[Map[Node, Node]]): Array[Map[Node, Node]] = {
     val exprParser = new ExprParser(expr)
     exprParser.exprVisitorWalker()
     val filterGroup = exprParser.getFilterGroup
@@ -40,5 +40,5 @@ class GraphFilter(val op: OpFilter) extends GraphOp with Serializable {
 
   override def getTag: String = { tag }
 
-  override def getExpr: ExprList = { expr }
+  def getExpr: ExprList = { expr }
 }

@@ -39,22 +39,20 @@ object GenerateSolutionMappings {
       }
       finalMatchSet = tempMatchSet
     }
-
-    val matchMap = finalMatchSet.map(_.mapping)
-    val matchVerties = finalMatchSet.map(_.vertex).distinct()
-    val matchVaribles = finalMatchSet.map(_.variable).distinct()
+    //finalMatchSet.collect().foreach(println(_))
 
     var bgpMapping = Array[Map[VD,VD]]()
     ms.tpList.foreach{ tp =>
       val tpMapping = finalMatchSet.filter(_.tp.equals(tp)).map(_.mapping).collect().map(_.filterKeys(_.toString.startsWith("?")))
       if(bgpMapping.isEmpty){
-        bgpMapping = tpMapping
+        bgpMapping = tpMapping.distinct
       }
       else{
-        bgpMapping = arrayOfMapJoin(bgpMapping, tpMapping)
+        bgpMapping = arrayOfMapJoin(bgpMapping, tpMapping).distinct
+
       }
     }
-    bgpMapping.distinct
+    bgpMapping
   }
 
   private def arrayOfMapJoin[VD](a: Array[Map[VD,VD]], b: Array[Map[VD,VD]]): Array[Map[VD,VD]] = {

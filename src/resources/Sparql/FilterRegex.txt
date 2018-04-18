@@ -1,0 +1,7 @@
+PREFIX tw: <http://twitter/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ?user ?name
+WHERE {
+    ?user foaf:name ?name .
+    FILTER regex (?name, "Ali")
+}

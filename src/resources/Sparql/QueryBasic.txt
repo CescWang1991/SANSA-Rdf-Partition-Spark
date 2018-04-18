@@ -1,5 +1,0 @@
-SELECT DISTINCT ?user ?follower
-WHERE {
-    ?user <http://twitter/follows> <http://twitter/user1> .
-    <http://twitter/user1> <http://twitter/follows> ?follower .
-}

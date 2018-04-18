@@ -12,7 +12,15 @@ class ExprRegex(variable: Node, value: Node) extends ExprFilter {
   private val tag = "Filter Regex"
 
   override def evaluate(solution: Map[Node, Node]): Boolean = {
-    solution(variable).toString.contains(value.toString)
+    if(solution(variable).isLiteral){
+      //println(solution(variable).getLiteral.getValue.toString)
+      //println(value.getLiteral.getValue.toString)
+      solution(variable).getLiteral.getValue.toString
+        .contains(value.getLiteral.getValue.toString)
+    }
+    else{
+      false
+    }
   }
 
   override def getTag: String = { tag }

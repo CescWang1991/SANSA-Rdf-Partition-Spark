@@ -1,7 +1,8 @@
 package net.sansa_stack.rdf.query.graph.jena
 
-import net.sansa_stack.rdf.query.graph.jena.expression.{ExprFilter, ExprCompare, ExprRegex}
+import net.sansa_stack.rdf.query.graph.jena.expression.{ExprCompare, ExprFilter, ExprRegex}
 import org.apache.jena.graph.Node
+import org.apache.jena.sparql.algebra.op.OpBGP
 import org.apache.jena.sparql.algebra.walker.{ExprVisitorFunction, Walker}
 import org.apache.jena.sparql.expr._
 import org.apache.spark.rdd.RDD
@@ -36,6 +37,8 @@ class ExprParser(exprs: ExprList) extends ExprVisitorFunction with Serializable 
     func match {
       case e: E_Equals =>
         exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Equals")
+      case e: E_NotEquals =>
+        exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Not Equals")
       case e: E_GreaterThan =>
         exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Greater Than")
       case e: E_GreaterThanOrEqual =>
@@ -62,6 +65,9 @@ class ExprParser(exprs: ExprList) extends ExprVisitorFunction with Serializable 
 
   override def visit(exprFunctionOp: ExprFunctionOp): Unit = {
     println(exprFunctionOp+":ExprFunctionOp")
+    exprFunctionOp match {
+      case e: E_Exists => println(e.getElement)
+    }
   }
 
   override def visit(exprAggregator: ExprAggregator): Unit = {

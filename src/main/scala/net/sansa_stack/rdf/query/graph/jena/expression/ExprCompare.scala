@@ -1,12 +1,14 @@
 package net.sansa_stack.rdf.query.graph.jena.expression
 
 import org.apache.jena.graph.Node
-import org.apache.jena.sparql.expr.{E_GreaterThan, E_GreaterThanOrEqual, ExprFunction2}
 
 /**
-  * Class that evaluate solution based on expression. Support expression as FILTER (?age > 18)
-  * @param variable expression of variable
-  * @param value expression of value
+  * Class that evaluate solution based on expression. Support expression as FILTER (?age >= 18).
+  * @param variable Expression of variable.
+  * @param value Expression of value.
+  * @param op Type of operator.
+  *
+  * @author Zhe Wang
   */
 class ExprCompare(variable: Node, value: Node, op: String) extends ExprFilter {
 
@@ -18,6 +20,8 @@ class ExprCompare(variable: Node, value: Node, op: String) extends ExprFilter {
       op match {
         case "Equals" =>
           solution(variable).getLiteralValue.toString.toDouble == value.getLiteralValue.toString.toDouble
+        case "Not Equals" =>
+          solution(variable).getLiteralValue.toString.toDouble != value.getLiteralValue.toString.toDouble
         case "Greater Than" =>
           solution(variable).getLiteralValue.toString.toDouble > value.getLiteralValue.toString.toDouble
         case "Greater Than Or Equal" =>

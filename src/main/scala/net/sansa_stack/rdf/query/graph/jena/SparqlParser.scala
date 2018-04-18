@@ -3,8 +3,9 @@ package net.sansa_stack.rdf.query.graph.jena
 import net.sansa_stack.rdf.query.graph.jena.graphOp._
 import org.apache.jena.query.QueryFactory
 import org.apache.jena.graph.Triple
-import org.apache.jena.sparql.algebra.{Algebra, OpVisitorBase, OpWalker}
+import org.apache.jena.sparql.algebra.{Algebra, Op, OpVisitorBase, OpWalker}
 import org.apache.jena.sparql.algebra.op._
+import org.apache.jena.sparql.expr.{E_Exists, E_NotExists}
 import org.apache.jena.sparql.syntax.ElementTriplesBlock
 
 import scala.collection.JavaConversions._
@@ -37,7 +38,16 @@ class SparqlParser(path: String) extends OpVisitorBase with Serializable {
   }
 
   override def visit(opFilter: OpFilter): Unit = {
-    groupOp += new GraphFilter(opFilter)
+    opFilter.getExprs.foreach{
+      // Add triple pattern in filter expression EXISTS to elementTriples
+      case e: E_Exists => OpWalker.walk(e.getGraphPattern, this)
+      case e: E_NotExists => OpWalker.walk(e.getGraphPattern, this)
+      case _ => groupOp += new GraphFilter(opFilter)
+    }
+  }
+
+  override def visit(opProject: OpProject): Unit = {
+    groupOp += new GraphProject(opProject)
   }
 
   def getGroupOp: mutable.Queue[GraphOp] = {
@@ -48,3 +58,7 @@ class SparqlParser(path: String) extends OpVisitorBase with Serializable {
     elementTriples.patternElts().toIterator
   }
 }
+
+/*object SparqlParser {
+  def asQuery(op: Op, dialect: Dialect)
+}*/

@@ -1,7 +1,0 @@
-PREFIX tw: <http://twitter/>
-SELECT ?user ?follower
-WHERE {
-    ?user tw:follows tw:user1 .
-    tw:user1 tw:follows ?follower .
-    FILTER regex(?follower, tw:user2)
-}
