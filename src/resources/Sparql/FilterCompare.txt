@@ -1,0 +1,8 @@
+PREFIX tw: <http://twitter/>
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ?user ?age
+WHERE {
+    ?user tw:follows tw:user7 .
+    ?user foaf:age ?age .
+    FILTER (?age != 12)
+}
