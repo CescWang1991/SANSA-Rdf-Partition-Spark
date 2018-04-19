@@ -8,6 +8,7 @@ import scala.collection.JavaConversions._
 
 /**
   * Class that execute the operations of projecting the required variables.
+  * @param op Project operator.
   */
 class GraphProject(val op: OpProject) extends GraphOp {
 
@@ -21,6 +22,7 @@ class GraphProject(val op: OpProject) extends GraphOp {
   }
 
   def test(): Unit = {
+    println(op)
     println(vars)
   }
 

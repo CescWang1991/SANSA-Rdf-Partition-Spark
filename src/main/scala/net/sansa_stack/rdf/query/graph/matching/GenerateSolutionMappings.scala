@@ -43,13 +43,16 @@ object GenerateSolutionMappings {
 
     var bgpMapping = Array[Map[VD,VD]]()
     ms.tpList.foreach{ tp =>
-      val tpMapping = finalMatchSet.filter(_.tp.equals(tp)).map(_.mapping).collect().map(_.filterKeys(_.toString.startsWith("?")))
+      val tpMapping = finalMatchSet
+        .filter(_.tp.equals(tp))
+        .map(_.mapping).collect()
+        .map(_.filterKeys(_.toString.startsWith("?")))
+        .distinct
       if(bgpMapping.isEmpty){
-        bgpMapping = tpMapping.distinct
+        bgpMapping = tpMapping
       }
       else{
         bgpMapping = arrayOfMapJoin(bgpMapping, tpMapping).distinct
-
       }
     }
     bgpMapping
@@ -57,7 +60,23 @@ object GenerateSolutionMappings {
 
   private def arrayOfMapJoin[VD](a: Array[Map[VD,VD]], b: Array[Map[VD,VD]]): Array[Map[VD,VD]] = {
     var c = Array[Map[VD,VD]]()
-    a.foreach(x => b.foreach(y => c = c :+ x.++(y)))
-    c
+    if(a.head.keySet.intersect(b.head.keySet).isEmpty){
+      a.foreach(x => b.foreach(y => c = c :+ x.++(y)))
+      c
+    } else if(a.head.keySet.intersect(b.head.keySet).size == 1){
+      a.foreach(x =>
+        b.foreach(y =>
+          if(x.get(a.head.keySet.head).equals(y.get(b.head.keySet.head))){
+            c = c :+ x.++(y)
+          }))
+      c
+    } else {
+      a.foreach(x =>
+        b.foreach(y =>
+          if(x.values.equals(y.values)){
+            c = c :+ x.++(y)
+          }))
+      c
+    }
   }
 }

@@ -27,17 +27,29 @@ class SparqlParser(path: String) extends OpVisitorBase with Serializable {
   private val elementTriples = new ElementTriplesBlock()
 
   def OpVisitorWalker(): Unit = {
+    println("Op: "+op)
     OpWalker.walk(op, this)
   }
 
+  override def visit(opAssign: OpAssign): Unit = {
+    println("opAssign: "+opAssign)
+  }
+
   override def visit(opBGP: OpBGP): Unit = {
+    println("opBGP: "+opBGP)
     val triples = opBGP.getPattern.toList
     for (triple <- triples) {
       elementTriples.addTriple(triple)
     }
   }
 
+  override def visit(opDistinct: OpDistinct): Unit = {
+    println("opDistinct: "+opDistinct)
+    groupOp += new GraphDistinct
+  }
+
   override def visit(opFilter: OpFilter): Unit = {
+    println("opFilter: "+opFilter)
     opFilter.getExprs.foreach{
       // Add triple pattern in filter expression EXISTS to elementTriples
       case e: E_Exists => OpWalker.walk(e.getGraphPattern, this)
@@ -46,8 +58,19 @@ class SparqlParser(path: String) extends OpVisitorBase with Serializable {
     }
   }
 
+  override def visit(opOrder: OpOrder): Unit = {
+    println("opOrder: "+opOrder)
+    groupOp += new GraphOrder(opOrder)
+  }
+
   override def visit(opProject: OpProject): Unit = {
+    println("opProject: "+opProject)
     groupOp += new GraphProject(opProject)
+  }
+
+  override def visit(opReduced: OpReduced): Unit = {
+    println("opReduced: "+opReduced)
+    groupOp += new GraphReduced
   }
 
   def getGroupOp: mutable.Queue[GraphOp] = {

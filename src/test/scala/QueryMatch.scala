@@ -7,7 +7,7 @@ import org.apache.spark.sql.SparkSession
 
 object QueryMatch {
   def main(args: Array[String]): Unit = {
-    val spPath = "src/resources/Sparql/FilterRegex.txt"
+    val spPath = "src/resources/Sparql/OrderBy.txt"
     val ntPath = "src/resources/Rdf/Clustering_sampledata.nt"
     val session = SparkSession.builder().master("local[*]").getOrCreate()
 
