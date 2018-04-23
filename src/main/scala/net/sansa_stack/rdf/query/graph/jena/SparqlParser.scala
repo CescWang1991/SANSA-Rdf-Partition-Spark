@@ -48,6 +48,11 @@ class SparqlParser(path: String) extends OpVisitorBase with Serializable {
     groupOp += new GraphDistinct
   }
 
+  override def visit(opExtend: OpExtend): Unit = {
+    println("opExtend: "+opExtend)
+    groupOp += new GraphExtend(opExtend)
+  }
+
   override def visit(opFilter: OpFilter): Unit = {
     println("opFilter: "+opFilter)
     opFilter.getExprs.foreach{
@@ -56,6 +61,11 @@ class SparqlParser(path: String) extends OpVisitorBase with Serializable {
       case e: E_NotExists => OpWalker.walk(e.getGraphPattern, this)
       case _ => groupOp += new GraphFilter(opFilter)
     }
+  }
+
+  override def visit(opGroup: OpGroup): Unit = {
+    println("opGroup: "+opGroup)
+    groupOp += new GraphGroup(opGroup)
   }
 
   override def visit(opOrder: OpOrder): Unit = {
@@ -73,6 +83,11 @@ class SparqlParser(path: String) extends OpVisitorBase with Serializable {
     groupOp += new GraphReduced
   }
 
+  override def visit(opSlice: OpSlice): Unit = {
+    println("opSlice: "+opSlice)
+    groupOp += new GraphSlice(opSlice)
+  }
+
   def getGroupOp: mutable.Queue[GraphOp] = {
     groupOp
   }
@@ -81,7 +96,3 @@ class SparqlParser(path: String) extends OpVisitorBase with Serializable {
     elementTriples.patternElts().toIterator
   }
 }
-
-/*object SparqlParser {
-  def asQuery(op: Op, dialect: Dialect)
-}*/

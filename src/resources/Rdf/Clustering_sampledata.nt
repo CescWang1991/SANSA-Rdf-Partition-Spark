@@ -24,3 +24,4 @@
 <http://twitter/user5> <http://xmlns.com/foaf/0.1/name> "Faye" .
 <http://twitter/user6> <http://twitter/follows> <http://twitter/user7> .
 <http://twitter/user6> <http://xmlns.com/foaf/0.1/age> "12" .
+<http://twitter/user7> <http://xmlns.com/foaf/0.1/age> "20" .

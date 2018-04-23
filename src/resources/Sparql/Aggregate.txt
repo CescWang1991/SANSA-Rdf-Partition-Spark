@@ -1,0 +1,7 @@
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX tw: <http://twitter/>
+SELECT DISTINCT ?user (AVG(?age) as ?ages) (MAX(?age) as ?max) (MIN(?age) as ?min)
+WHERE {
+    ?user tw:follows ?follower .
+    ?follower foaf:age ?age .
+} GROUP BY ?user

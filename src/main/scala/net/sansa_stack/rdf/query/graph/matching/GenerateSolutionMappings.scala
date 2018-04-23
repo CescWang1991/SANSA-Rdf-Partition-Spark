@@ -60,20 +60,22 @@ object GenerateSolutionMappings {
 
   private def arrayOfMapJoin[VD](a: Array[Map[VD,VD]], b: Array[Map[VD,VD]]): Array[Map[VD,VD]] = {
     var c = Array[Map[VD,VD]]()
-    if(a.head.keySet.intersect(b.head.keySet).isEmpty){
+    if(a.head.keySet.intersect(b.head.keySet).isEmpty){   //two arrays have no common keys
       a.foreach(x => b.foreach(y => c = c :+ x.++(y)))
       c
-    } else if(a.head.keySet.intersect(b.head.keySet).size == 1){
+    } else if(a.head.keySet.intersect(b.head.keySet).size == 1){  //two arrays has one common keys
+      val intVar = a.head.keySet.intersect(b.head.keySet).head
       a.foreach(x =>
         b.foreach(y =>
-          if(x.get(a.head.keySet.head).equals(y.get(b.head.keySet.head))){
+          if(x.get(intVar).equals(y.get(intVar))){
             c = c :+ x.++(y)
           }))
       c
-    } else {
+    } else {  //two arrays has two common keys
+      val intVar = a.head.keySet.intersect(b.head.keySet)
       a.foreach(x =>
         b.foreach(y =>
-          if(x.values.equals(y.values)){
+          if(x.get(intVar.head).equals(y.get(intVar.head)) && x.get(intVar.tail.head).equals(y.get(intVar.tail.head))){
             c = c :+ x.++(y)
           }))
       c

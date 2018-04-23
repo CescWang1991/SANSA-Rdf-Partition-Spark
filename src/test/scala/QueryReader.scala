@@ -17,7 +17,7 @@ import scala.io.Source
 
 object QueryReader {
   def main(args: Array[String]): Unit = {
-    val spPath = "src/resources/Sparql/OrderBy.txt"
+    val spPath = "src/resources/Sparql/Aggregate.txt"
     val ntPath = "src/resources/Rdf/Clustering_sampledata.nt"
 
     val sp = new SparqlParser(spPath)
@@ -27,14 +27,14 @@ object QueryReader {
     val bgp = BasicGraphPattern(sp.getElementTriples, session.sparkContext)
     val graph = LoadGraph.apply (NTripleReader.load (session, ntPath))
     val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
-    /*solutionMapping.foreach(println(_))
+    solutionMapping.foreach(println(_))
     println("---------After filter---------")
     var intermediate = solutionMapping
     sp.getGroupOp.foreach(op => intermediate = op.execute(intermediate))
-    intermediate.foreach(println(_))*/
+    intermediate.foreach(println(_))
 
-    val queue = sp.getGroupOp
+    /*val queue = sp.getGroupOp
+    queue.head.asInstanceOf[GraphOrder].test(solutionMapping)*/
     //queue.foreach(op => println(op.getTag))
-    queue.head.asInstanceOf[GraphOrder].test(solutionMapping)
   }
 }

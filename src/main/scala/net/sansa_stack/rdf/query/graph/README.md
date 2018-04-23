@@ -101,6 +101,17 @@ Note: Currently only support filter expression EXISTS. NOT EXISTS is still under
 ### Aggregates
 
 #### Example: [GROUP BY](https://www.w3.org/TR/sparql11-query/#groupby)
+```sparql
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX tw: <http://twitter/>
+SELECT DISTINCT ?user (AVG(?age) as ?ages) (MAX(?age) as ?max) (MIN(?age) as ?min)
+WHERE {
+    ?user tw:follows ?follower .
+    ?follower foaf:age ?age .
+} GROUP BY ?user
+```
+Note: The example is produced by grouping solutions according to the GROUP BY expression. Currently support group by 
+simple variables, and support aggregate operation as COUNT, SUM, MIN, MAX, AVG.
 
 #### Example: [HAVING](https://www.w3.org/TR/sparql11-query/#having)
 
@@ -147,6 +158,12 @@ WHERE {
 }
 ```
 
-#### Example: [OFFSET](https://www.w3.org/TR/sparql11-query/#modOffset)<a name="Offset"></a>
-
-#### Example: [LIMIT](https://www.w3.org/TR/sparql11-query/#modResultLimit)<a name="Limit"></a>
+#### Example: [SLICE](https://www.w3.org/TR/sparql11-query/#modOffset)<a name="Offset"></a>
+```sparql
+PREFIX tw: <http://twitter/>
+SELECT DISTINCT ?user
+WHERE {
+    ?user tw:follows ?follower .
+} LIMIT 3
+OFFSET 2
+```

@@ -3,4 +3,4 @@ PREFIX tw: <http://twitter/>
 SELECT DISTINCT ?user ?follower
 WHERE {
     ?user tw:follows ?follower .
-} ORDER BY ?user ?follower
+} ORDER BY ?user DESC(?follower)
