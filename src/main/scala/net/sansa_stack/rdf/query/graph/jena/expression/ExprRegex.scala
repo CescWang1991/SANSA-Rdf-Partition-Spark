@@ -13,8 +13,6 @@ class ExprRegex(variable: Node, value: Node) extends ExprFilter {
 
   override def evaluate(solution: Map[Node, Node]): Boolean = {
     if(solution(variable).isLiteral){
-      //println(solution(variable).getLiteral.getValue.toString)
-      //println(value.getLiteral.getValue.toString)
       solution(variable).getLiteral.getValue.toString
         .contains(value.getLiteral.getValue.toString)
     }

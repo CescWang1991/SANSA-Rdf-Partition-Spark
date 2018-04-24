@@ -1,0 +1,6 @@
+PREFIX tw: <http://twitter/>
+SELECT ?user
+WHERE {
+    { ?user tw:follows tw:user7 . }
+    UNION { ?user tw:follows tw:user2 . }
+}

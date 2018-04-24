@@ -39,14 +39,40 @@ Map(?user -> "<http://twitter/user0>", ?follower -> "<http://twitter/user6>")
 ### Including Optional Values
 
 #### Example: [Optional Pattern Matching](https://www.w3.org/TR/sparql11-query/#OptionalMatching)
+```sparql
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ?name ?age
+WHERE {
+    ?user foaf:age ?age .
+    OPTIONAL { ?user foaf:name ?name . }
+}
+```
 
 #### Example: [Constraints in Optional Pattern Matching](https://www.w3.org/TR/sparql11-query/#OptionalAndConstraints)
 
 #### Example: [Multiple Optional Graph Patterns](https://www.w3.org/TR/sparql11-query/#MultipleOptionals)
+```sparql
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX tw: <http://twitter/>
+SELECT ?name ?age
+WHERE {
+    ?user tw:follows tw:user7
+    OPTIONAL { ?user foaf:age ?age . }
+    OPTIONAL { ?user foaf:name ?name . }
+}
+```
 
 ### Matching Alternatives
 
 #### Example: [UNION](https://www.w3.org/TR/sparql11-query/#alternatives)
+```sparql
+PREFIX tw: <http://twitter/>
+SELECT ?user
+WHERE {
+    { ?user tw:follows tw:user7 . }
+    UNION { ?user tw:follows tw:user2 . }
+}
+```
 
 ### Negation
 Execute operations of expressions by the keyword FILTER.
@@ -86,9 +112,31 @@ WHERE {
     FILTER EXISTS { ?user foaf:name ?name }
 }
 ```
-Note: Currently only support filter expression EXISTS. NOT EXISTS is still under construction.
+AND
+```sparql
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX tw: <http://twitter/>
+SELECT ?name WHERE {
+    ?user foaf:name ?name
+    FILTER NOT EXISTS {
+        ?user  tw:follows ?follower .
+        ?follower foaf:name "Diana" .
+    }
+}
+```
 
 #### Example: [MINUS](https://www.w3.org/TR/sparql11-query/#neg-minus)
+```sparql
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX tw: <http://twitter/>
+SELECT ?name WHERE {
+    ?user foaf:name ?name
+    MINUS {
+        ?user  tw:follows ?follower .
+        ?follower foaf:name "Diana" .
+    }
+}
+```
 
 ### [Property Paths](https://www.w3.org/TR/sparql11-query/#propertypaths)
 
@@ -128,7 +176,6 @@ WHERE {
     ?user foaf:age ?age .
 } ORDER BY ?age
 ```
-Note: Ordering with several variables is still under construction.
 
 #### Example: [Projection](https://www.w3.org/TR/sparql11-query/#modProjection)<a name="Projection"></a>
 ```sparql

@@ -5,7 +5,7 @@ import org.apache.jena.sparql.expr.ExprList
 import org.apache.spark.rdd.RDD
 
 /**
-  * Trait for all graph operators
+  * Trait for all operations related to deal with solution mapping directly.
   *
   * @author Zhe Wang
   */

@@ -1,0 +1,19 @@
+package net.sansa_stack.rdf.query.graph.jena.patternOp
+
+import org.apache.jena.graph.Node
+import org.apache.spark.graphx.Graph
+import org.apache.spark.sql.SparkSession
+
+/**
+  * Trait for all operations related to deal with graph pattern.
+  *
+  * @author Zhe Wang
+  */
+trait PatternOp extends Serializable{
+
+  def execute(input: Array[Map[Node, Node]],
+              graph: Graph[Node, Node],
+              session: SparkSession): Array[Map[Node, Node]]
+
+  def getTag: String
+}

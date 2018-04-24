@@ -11,15 +11,16 @@ object QueryMatch {
     val ntPath = "src/resources/Rdf/Clustering_sampledata.nt"
     val session = SparkSession.builder().master("local[*]").getOrCreate()
 
-    val sp = new SparqlParser(spPath)
+    /*val sp = new SparqlParser(spPath)
     sp.OpVisitorWalker()
-    val bgp = BasicGraphPattern(sp.getElementTriples, session.sparkContext)
+    val bgp = BasicGraphPattern(sp.getElementTriples, session.sparkContext)*/
     val graph = LoadGraph.apply (NTripleReader.load (session, ntPath))
+    graph.triplets.foreach(println(_))
 
     //bgp.tripleRDD.collect().foreach(println(_))
     //graph.triplets.collect().foreach(println(_))
-    val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
-    solutionMapping.foreach(println(_))
+    /*val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
+    solutionMapping.foreach(println(_))*/
 
     //val ms = new MatchSet[Node, Node](graph, bgp.triplePatterns.collect(), session)
     //ms.matchCandidateSet.collect().foreach(println(_))

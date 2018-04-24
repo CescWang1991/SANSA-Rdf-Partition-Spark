@@ -3,9 +3,7 @@ package net.sansa_stack.rdf.query.graph.jena.expression
 import org.apache.jena.graph.Node
 
 /**
-  * Class that evaluate solution based on expression. Support expression as FILTER EXISTS { triple pattern } or
-  * FILTER NOT EXISTS { triple pattern }.
-  *
+  * Class that evaluate solution based on expression. Support expression as FILTER EXISTS { triple pattern }
   * @param op Type of operator.
   *
   * @author Zhe Wang
