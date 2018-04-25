@@ -24,18 +24,12 @@ class GraphFilter(val op: OpFilter) extends GraphOp {
     */
   override def execute(input: Array[Map[Node, Node]]): Array[Map[Node, Node]] = {
     val exprParser = new ExprParser(expr)
-    exprParser.exprVisitorWalker()
     val filterGroup = exprParser.getFilterGroup
     var intermediate = input
     filterGroup.foreach(exprFilter =>
       intermediate = intermediate.filter(solution => exprFilter.evaluate(solution)))
     val output = intermediate
     output
-  }
-
-  def test(): Unit = {
-    val exprParser = new ExprParser(expr)
-    exprParser.exprVisitorWalker()
   }
 
   override def getTag: String = { tag }

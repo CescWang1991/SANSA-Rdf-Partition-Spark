@@ -1,4 +1,4 @@
-import net.sansa_stack.rdf.query.graph.jena.graphOp.{GraphFilter, GraphOrder, GraphProject, GraphReduced}
+import net.sansa_stack.rdf.query.graph.jena.graphOp._
 import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, ExprParser, SparqlParser}
 import net.sansa_stack.rdf.query.graph.matching._
 import net.sansa_stack.rdf.spark.graph.LoadGraph
@@ -17,27 +17,26 @@ import scala.io.Source
 
 object QueryReader {
   def main(args: Array[String]): Unit = {
-    val spPath = "src/resources/Sparql/Negation.txt"
+    val spPath = "src/resources/BSBM_Similar/query4.txt"
     val ntPath = "src/resources/Rdf/Clustering_sampledata.nt"
 
     val sp = new SparqlParser(spPath)
-    sp.OpVisitorWalker()
 
     val session = SparkSession.builder().master("local[*]").getOrCreate()
     val bgp = BasicGraphPattern(sp.getElementTriples, session.sparkContext)
     val graph = LoadGraph.apply (NTripleReader.load (session, ntPath))
-    val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
+    /*val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
     solutionMapping.foreach(println(_))
-    println("---------Before filter---------")
     var intermediate = solutionMapping
-    sp.getPatternOps.foreach(op => intermediate = op.execute(intermediate, graph, session))
-    intermediate.foreach(println(_))
-    println("---------After filter---------")
-    sp.getGraphOps.foreach(op => intermediate = op.execute(intermediate))
-    intermediate.foreach(println(_))
+    sp.getPatternOps.foreach { op =>
+      println(op.getTag)
+      intermediate = op.execute(intermediate, graph, session)
+      intermediate.foreach(println(_))
+    }
+    sp.getGraphOps.foreach{op => println(op.getTag)
+      intermediate = op.execute(intermediate)
+      intermediate.foreach(println(_))}*/
 
-    /*val queue = sp.getGroupOp
-    queue.head.asInstanceOf[GraphOrder].test(solutionMapping)*/
-    //queue.foreach(op => println(op.getTag))
+    sp.getOps.foreach(op => println("TAG: "+op.getTag+"; TYPE: "+op.isInstanceOf[GraphOp]))
   }
 }

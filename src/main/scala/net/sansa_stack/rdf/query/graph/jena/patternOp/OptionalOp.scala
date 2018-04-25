@@ -1,9 +1,9 @@
 package net.sansa_stack.rdf.query.graph.jena.patternOp
 
-import net.sansa_stack.rdf.query.graph.jena.BasicGraphPattern
+import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, ExprParser, SparqlParser}
 import net.sansa_stack.rdf.query.graph.matching.GenerateSolutionMappings
 import org.apache.jena.graph.Node
-import org.apache.jena.sparql.core.BasicPattern
+import org.apache.jena.sparql.algebra.op.{OpBGP, OpLeftJoin}
 import org.apache.spark.graphx.Graph
 import org.apache.spark.sql.SparkSession
 
@@ -11,11 +11,13 @@ import scala.collection.JavaConversions._
 
 /**
   * Class that execute SPARQL OPTIONAL operation
-  * @param bgp Basic Pattern for optional
+  * @param op Basic Pattern for optional
   */
-class OptionalOp(bgp: BasicPattern) extends PatternOp {
+class OptionalOp(op: OpLeftJoin) extends PatternOp {
 
   private val tag = "OPTIONAL"
+  println(op.getRight)
+  private val bgp = op.getRight.asInstanceOf[OpBGP].getPattern
 
   override def execute(input: Array[Map[Node, Node]],
                        graph: Graph[Node, Node],
@@ -23,7 +25,14 @@ class OptionalOp(bgp: BasicPattern) extends PatternOp {
     val optional = GenerateSolutionMappings.run[Node, Node](graph,
       BasicGraphPattern(bgp.toIterator, session.sparkContext).triplePatterns,
       session)
-    leftJoin(input, optional)
+    val exprParser = new ExprParser(op.getExprs)
+    val filterGroup = exprParser.getFilterGroup
+    var intermediate = optional
+    filterGroup.foreach(exprFilter =>
+      intermediate = intermediate.filter(solution => exprFilter.evaluate(solution)))
+    val finalOptional = intermediate
+
+    leftJoin(input, finalOptional)
   }
 
   override def getTag: String = { tag }

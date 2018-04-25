@@ -1,5 +1,6 @@
 package net.sansa_stack.rdf.query.graph.jena.patternOp
 
+import net.sansa_stack.rdf.query.graph.jena.Ops
 import org.apache.jena.graph.Node
 import org.apache.spark.graphx.Graph
 import org.apache.spark.sql.SparkSession
@@ -9,11 +10,11 @@ import org.apache.spark.sql.SparkSession
   *
   * @author Zhe Wang
   */
-trait PatternOp extends Serializable{
+trait PatternOp extends Ops {
 
   def execute(input: Array[Map[Node, Node]],
               graph: Graph[Node, Node],
               session: SparkSession): Array[Map[Node, Node]]
 
-  def getTag: String
+  override def getTag: String
 }

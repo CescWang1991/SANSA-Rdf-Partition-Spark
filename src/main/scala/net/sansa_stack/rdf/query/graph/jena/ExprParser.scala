@@ -1,6 +1,6 @@
 package net.sansa_stack.rdf.query.graph.jena
 
-import net.sansa_stack.rdf.query.graph.jena.expression.{ExprCompare, ExprFilter, ExprRegex}
+import net.sansa_stack.rdf.query.graph.jena.expression.{ExprBound, ExprCompare, ExprFilter, ExprRegex}
 import org.apache.jena.graph.Node
 import org.apache.jena.sparql.algebra.op.OpBGP
 import org.apache.jena.sparql.algebra.walker.{ExprVisitorFunction, Walker}
@@ -16,9 +16,7 @@ class ExprParser(exprs: ExprList) extends ExprVisitorFunction with Serializable 
   private val left = new mutable.Stack[Node]
   private val right = new mutable.Stack[Node]
 
-  def exprVisitorWalker(): Unit = {
-    Walker.walk(exprs, this)
-  }
+  Walker.walk(exprs, this)
 
   override def visitExprFunction(func: ExprFunction): Unit = {
     println(func+":ExprFunction")
@@ -30,22 +28,26 @@ class ExprParser(exprs: ExprList) extends ExprVisitorFunction with Serializable 
 
   override def visit(func: ExprFunction1): Unit = {
     println(func+":ExprFunction1")
+    func match {
+      case _: E_Bound => exprFilterGroup += new ExprBound(left.pop())
+      case _: E_LogicalNot => exprFilterGroup.last.asInstanceOf[ExprBound].setLogic(false)
+    }
   }
 
   override def visit(func: ExprFunction2): Unit = {
     println(func+":ExprFunction2")
     func match {
-      case e: E_Equals =>
+      case _: E_Equals =>
         exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Equals")
-      case e: E_NotEquals =>
+      case _: E_NotEquals =>
         exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Not Equals")
-      case e: E_GreaterThan =>
+      case _: E_GreaterThan =>
         exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Greater Than")
-      case e: E_GreaterThanOrEqual =>
+      case _: E_GreaterThanOrEqual =>
         exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Greater Than Or Equal")
-      case e: E_LessThan =>
+      case _: E_LessThan =>
         exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Less Than")
-      case e: E_LessThanOrEqual =>
+      case _: E_LessThanOrEqual =>
         exprFilterGroup += new ExprCompare(left.pop(), right.pop(), "Less Than Or Equal")
       case _ =>  throw new UnsupportedOperationException("Not support the expression of ExprFunction2")
     }
@@ -58,7 +60,7 @@ class ExprParser(exprs: ExprList) extends ExprVisitorFunction with Serializable 
   override def visit(func: ExprFunctionN): Unit = {
     println(func+":ExprFunctionN")
     func match {
-      case e: E_Regex => exprFilterGroup += new ExprRegex(left.pop(), right.pop())
+      case _: E_Regex => exprFilterGroup += new ExprRegex(left.pop(), right.pop())
       case _ =>  throw new UnsupportedOperationException("Not support the expression of ExprFunctionN")
     }
   }
