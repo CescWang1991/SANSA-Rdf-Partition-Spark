@@ -85,6 +85,21 @@ WHERE {
 }
 ```
 
+#### Example: Constraints in Optional Pattern Matching
+```sparql
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT ?user ?age
+WHERE {
+    {   ?user foaf:age ?age .
+        FILTER(?age>25)
+    }
+    UNION {
+        ?user foaf:age ?age .
+        FILTER(?age<20)
+    }
+}
+```
+
 ### Negation
 Execute operations of expressions by the keyword FILTER.
 
@@ -111,7 +126,7 @@ WHERE {
     FILTER (?age <= 12)
 }
 ```
-Note: Support operators include Equals(==), Not Equals(!=), GreaterThanOrEqual(>=), GreaterThan(>), LessThanOrEqual(<=), LessThan(<).
+Note: Support operators include Equals(=), Not Equals(!=), GreaterThanOrEqual(>=), GreaterThan(>), LessThanOrEqual(<=), LessThan(<).
 
 #### Example: Filtering Pattern<a name="Pattern"></a>
 ```sparql

@@ -13,7 +13,7 @@ import scala.util.control.Breaks._
   * Class that execute SPARQL MINUS and FILTER NOT operations
   * @param bgp Basic Pattern for negation
   */
-class NegateOp(bgp: BasicPattern) extends PatternOp {
+class PatternNegate(bgp: BasicPattern) extends PatternOp {
 
   private val tag = "FILTER NOT EXISTS / MINUS"
 

@@ -1,4 +1,0 @@
-<http://twitter/userA> <http://twitter/knows> <http://twitter/userB> .
-<http://twitter/userA> <http://twitter/likes> <http://twitter/userB> .
-<http://twitter/userB> <http://twitter/knows> <http://twitter/userC> .
-<http://twitter/userA> <http://twitter/likes> <http://twitter/userC> .

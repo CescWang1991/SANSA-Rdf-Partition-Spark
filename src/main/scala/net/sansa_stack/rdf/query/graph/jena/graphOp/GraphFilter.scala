@@ -3,19 +3,18 @@ package net.sansa_stack.rdf.query.graph.jena.graphOp
 import net.sansa_stack.rdf.query.graph.jena.ExprParser
 import org.apache.jena.graph.Node
 import org.apache.jena.sparql.algebra.op.OpFilter
-import org.apache.jena.sparql.expr.ExprList
+import org.apache.jena.sparql.expr.{Expr, ExprList}
 import org.apache.spark.rdd.RDD
 
 import scala.collection.JavaConversions._
 
 /**
   * Class that execute SPARQL FILTER operation
-  * @param op FILTER operation
+  * @param expr FILTER expression
   */
-class GraphFilter(val op: OpFilter) extends GraphOp {
+class GraphFilter(val expr: Expr) extends GraphOp {
 
   private val tag = "FILTER"
-  private val expr = op.getExprs
 
   /**
     * Filter the result by the given filter expression
@@ -24,15 +23,14 @@ class GraphFilter(val op: OpFilter) extends GraphOp {
     */
   override def execute(input: Array[Map[Node, Node]]): Array[Map[Node, Node]] = {
     val exprParser = new ExprParser(expr)
-    val filterGroup = exprParser.getFilterGroup
+    val filter = exprParser.getFilter
     var intermediate = input
-    filterGroup.foreach(exprFilter =>
-      intermediate = intermediate.filter(solution => exprFilter.evaluate(solution)))
+    filter.foreach(expr => intermediate = intermediate.filter(solution => expr.evaluate(solution)))
     val output = intermediate
     output
   }
 
   override def getTag: String = { tag }
 
-  def getExpr: ExprList = { expr }
+  def getExpr: Expr = { expr }
 }

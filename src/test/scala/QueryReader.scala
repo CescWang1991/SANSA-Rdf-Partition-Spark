@@ -1,4 +1,5 @@
 import net.sansa_stack.rdf.query.graph.jena.graphOp._
+import net.sansa_stack.rdf.query.graph.jena.patternOp.PatternOp
 import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, ExprParser, SparqlParser}
 import net.sansa_stack.rdf.query.graph.matching._
 import net.sansa_stack.rdf.spark.graph.LoadGraph
@@ -17,26 +18,24 @@ import scala.io.Source
 
 object QueryReader {
   def main(args: Array[String]): Unit = {
-    val spPath = "src/resources/BSBM_Similar/query4.txt"
+    val spPath = "src/resources/BSBM/query5.txt"
     val ntPath = "src/resources/Rdf/Clustering_sampledata.nt"
 
     val sp = new SparqlParser(spPath)
 
     val session = SparkSession.builder().master("local[*]").getOrCreate()
-    val bgp = BasicGraphPattern(sp.getElementTriples, session.sparkContext)
+    val bgp = BasicGraphPattern(sp.getElementTriples.toIterator, session.sparkContext)
     val graph = LoadGraph.apply (NTripleReader.load (session, ntPath))
-    /*val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
+    val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
     solutionMapping.foreach(println(_))
     var intermediate = solutionMapping
-    sp.getPatternOps.foreach { op =>
-      println(op.getTag)
-      intermediate = op.execute(intermediate, graph, session)
-      intermediate.foreach(println(_))
+    sp.getOps.foreach{
+      case op: GraphOp => intermediate = op.execute(intermediate)
+        println(op.getTag)
+        intermediate.foreach(println(_))
+      case op: PatternOp => intermediate = op.execute(intermediate, graph, session)
+        println(op.getTag)
+        intermediate.foreach(println(_))
     }
-    sp.getGraphOps.foreach{op => println(op.getTag)
-      intermediate = op.execute(intermediate)
-      intermediate.foreach(println(_))}*/
-
-    sp.getOps.foreach(op => println("TAG: "+op.getTag+"; TYPE: "+op.isInstanceOf[GraphOp]))
   }
 }

@@ -1,38 +1,38 @@
 package net.sansa_stack.rdf.query.graph.jena.patternOp
 
-import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, ExprParser, SparqlParser}
+import net.sansa_stack.rdf.query.graph.jena.graphOp.{GraphFilter, GraphOp}
+import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, ExprParser, Ops, SparqlParser}
 import net.sansa_stack.rdf.query.graph.matching.GenerateSolutionMappings
-import org.apache.jena.graph.Node
+import org.apache.jena.graph.{Node, Triple}
 import org.apache.jena.sparql.algebra.op.{OpBGP, OpLeftJoin}
+import org.apache.jena.sparql.expr.ExprList
 import org.apache.spark.graphx.Graph
 import org.apache.spark.sql.SparkSession
 
 import scala.collection.JavaConversions._
+import scala.collection.mutable
 
 /**
   * Class that execute SPARQL OPTIONAL operation
-  * @param op Basic Pattern for optional
+  * @param bgp Basic Pattern for optional
   */
-class OptionalOp(op: OpLeftJoin) extends PatternOp {
+class PatternOptional(bgp: Iterator[Triple], exprs: ExprList) extends PatternOp {
 
   private val tag = "OPTIONAL"
-  println(op.getRight)
-  private val bgp = op.getRight.asInstanceOf[OpBGP].getPattern
+  private val ops = new mutable.Queue[GraphFilter]()
 
   override def execute(input: Array[Map[Node, Node]],
                        graph: Graph[Node, Node],
                        session: SparkSession): Array[Map[Node, Node]] = {
-    val optional = GenerateSolutionMappings.run[Node, Node](graph,
-      BasicGraphPattern(bgp.toIterator, session.sparkContext).triplePatterns,
+    var optional = GenerateSolutionMappings.run[Node, Node](graph,
+      BasicGraphPattern(bgp, session.sparkContext).triplePatterns,
       session)
-    val exprParser = new ExprParser(op.getExprs)
-    val filterGroup = exprParser.getFilterGroup
-    var intermediate = optional
-    filterGroup.foreach(exprFilter =>
-      intermediate = intermediate.filter(solution => exprFilter.evaluate(solution)))
-    val finalOptional = intermediate
+    if(!(exprs==null)){
+      exprs.foreach(expr => ops.enqueue(new GraphFilter(expr)))
+      ops.foreach(op => optional = op.asInstanceOf[GraphOp].execute(optional))
+    }
 
-    leftJoin(input, finalOptional)
+    leftJoin(input, optional)
   }
 
   override def getTag: String = { tag }
