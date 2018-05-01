@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.query.graph.jena.graphOp
+package net.sansa_stack.rdf.query.graph.jena.resultOp
 
 import org.apache.jena.graph.Node
 import org.apache.jena.sparql.algebra.op.OpSlice
@@ -7,7 +7,7 @@ import org.apache.jena.sparql.algebra.op.OpSlice
   * Class that execute SPARQL LIMIT and OFFSET operations
   * @param op Slice operator
   */
-class GraphSlice(op: OpSlice) extends GraphOp {
+class ResultSlice(op: OpSlice) extends ResultOp {
 
   private val tag = "LIMIT and OFFSET"
 

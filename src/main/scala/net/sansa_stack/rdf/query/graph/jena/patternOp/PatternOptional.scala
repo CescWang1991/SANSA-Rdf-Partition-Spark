@@ -1,6 +1,6 @@
 package net.sansa_stack.rdf.query.graph.jena.patternOp
 
-import net.sansa_stack.rdf.query.graph.jena.graphOp.{GraphFilter, GraphOp}
+import net.sansa_stack.rdf.query.graph.jena.resultOp.{ResultFilter, ResultOp}
 import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, ExprParser, Ops, SparqlParser}
 import net.sansa_stack.rdf.query.graph.matching.GenerateSolutionMappings
 import org.apache.jena.graph.{Node, Triple}
@@ -19,7 +19,7 @@ import scala.collection.mutable
 class PatternOptional(bgp: Iterator[Triple], exprs: ExprList) extends PatternOp {
 
   private val tag = "OPTIONAL"
-  private val ops = new mutable.Queue[GraphFilter]()
+  private val ops = new mutable.Queue[ResultFilter]()
 
   override def execute(input: Array[Map[Node, Node]],
                        graph: Graph[Node, Node],
@@ -28,8 +28,8 @@ class PatternOptional(bgp: Iterator[Triple], exprs: ExprList) extends PatternOp 
       BasicGraphPattern(bgp, session.sparkContext).triplePatterns,
       session)
     if(!(exprs==null)){
-      exprs.foreach(expr => ops.enqueue(new GraphFilter(expr)))
-      ops.foreach(op => optional = op.asInstanceOf[GraphOp].execute(optional))
+      exprs.foreach(expr => ops.enqueue(new ResultFilter(expr)))
+      ops.foreach(op => optional = op.asInstanceOf[ResultOp].execute(optional))
     }
 
     leftJoin(input, optional)

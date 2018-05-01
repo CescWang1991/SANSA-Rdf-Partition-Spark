@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.query.graph.jena.graphOp
+package net.sansa_stack.rdf.query.graph.jena.resultOp
 
 import org.apache.jena.graph.{Node, NodeFactory}
 import org.apache.jena.sparql.algebra.op.OpGroup
@@ -11,7 +11,7 @@ import scala.collection.JavaConversions._
   * Class that execute SPARQL GROUP BY operation.
   * @param op Group By operator
   */
-class GraphGroup(op: OpGroup) extends GraphOp {
+class ResultGroup(op: OpGroup) extends ResultOp {
 
   private val tag = "GROUP BY"
 

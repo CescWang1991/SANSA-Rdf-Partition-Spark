@@ -1,6 +1,7 @@
 package net.sansa_stack.rdf.query.graph.jena
 
-import net.sansa_stack.rdf.query.graph.jena.graphOp._
+import net.sansa_stack.rdf.query.graph.jena.newOp.{NewDistinct, NewProject}
+import net.sansa_stack.rdf.query.graph.jena.resultOp._
 import net.sansa_stack.rdf.query.graph.jena.patternOp.{PatternNegate, PatternOp, PatternOptional, PatternUnion}
 import org.apache.jena.query.{Query, QueryFactory}
 import org.apache.jena.graph.Triple
@@ -45,12 +46,13 @@ class SparqlParser(path: String, op: Op) extends OpVisitorBase with Serializable
 
   override def visit(opDistinct: OpDistinct): Unit = {
     println("opDistinct: "+opDistinct)
-    ops.enqueue(new GraphDistinct)
+    ops.enqueue(new ResultDistinct)
+    //ops.enqueue(new NewDistinct)
   }
 
   override def visit(opExtend: OpExtend): Unit = {
     println("opExtend: "+opExtend)
-    ops.enqueue(new GraphExtend(opExtend))
+    ops.enqueue(new ResultExtend(opExtend))
   }
 
   override def visit(opFilter: OpFilter): Unit = {
@@ -66,13 +68,13 @@ class SparqlParser(path: String, op: Op) extends OpVisitorBase with Serializable
           triples.add(triple)
         }
         ops.enqueue(new PatternNegate(triples))
-      case other => ops.enqueue(new GraphFilter(other))
+      case other => ops.enqueue(new ResultFilter(other))
     }
   }
 
   override def visit(opGroup: OpGroup): Unit = {
     println("opGroup: "+opGroup)
-    ops.enqueue(new GraphGroup(opGroup))
+    ops.enqueue(new ResultGroup(opGroup))
   }
 
   override def visit(opLeftJoin: OpLeftJoin): Unit = {
@@ -92,22 +94,23 @@ class SparqlParser(path: String, op: Op) extends OpVisitorBase with Serializable
 
   override def visit(opOrder: OpOrder): Unit = {
     println("opOrder: "+opOrder)
-    ops.enqueue(new GraphOrder(opOrder))
+    ops.enqueue(new ResultOrder(opOrder))
   }
 
   override def visit(opProject: OpProject): Unit = {
     println("opProject: "+opProject)
-    ops.enqueue(new GraphProject(opProject))
+    ops.enqueue(new ResultProject(opProject))
+    //ops.enqueue(new NewProject(opProject))
   }
 
   override def visit(opReduced: OpReduced): Unit = {
     println("opReduced: "+opReduced)
-    ops.enqueue(new GraphReduced)
+    ops.enqueue(new ResultReduced)
   }
 
   override def visit(opSlice: OpSlice): Unit = {
     println("opSlice: "+opSlice)
-    ops.enqueue(new GraphSlice(opSlice))
+    ops.enqueue(new ResultSlice(opSlice))
   }
 
   override def visit(opUnion: OpUnion): Unit = {
@@ -115,7 +118,7 @@ class SparqlParser(path: String, op: Op) extends OpVisitorBase with Serializable
     val sp = new SparqlParser(opUnion.getRight)
     elementTriples --= sp.getElementTriples
     sp.getOps.foreach(op => ops.dequeueFirst {
-      case e: GraphFilter => e.getExpr.equals(op.asInstanceOf[GraphFilter].getExpr)
+      case e: ResultFilter => e.getExpr.equals(op.asInstanceOf[ResultFilter].getExpr)
       case _ => false
     })
     ops.enqueue(new PatternUnion(sp.getElementTriples.toIterator, sp.getOps))

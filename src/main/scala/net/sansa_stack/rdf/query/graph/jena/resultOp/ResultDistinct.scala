@@ -1,7 +1,7 @@
-package net.sansa_stack.rdf.query.graph.jena.graphOp
+package net.sansa_stack.rdf.query.graph.jena.resultOp
 import org.apache.jena.graph.Node
 
-class GraphDistinct extends GraphOp {
+class ResultDistinct extends ResultOp {
 
   private val tag = "DISTINCT"
 

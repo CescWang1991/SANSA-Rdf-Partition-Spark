@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.query.graph.jena.expression
+package net.sansa_stack.rdf.query.graph.jena.exprFilter
 
 import org.apache.jena.graph.Node
 import org.apache.jena.sparql.expr.NodeValue

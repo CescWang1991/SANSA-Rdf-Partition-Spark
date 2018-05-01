@@ -1,6 +1,6 @@
 package net.sansa_stack.rdf.query.graph.jena
 
-import net.sansa_stack.rdf.query.graph.jena.expression.{ExprBound, ExprCompare, ExprFilter, ExprRegex}
+import net.sansa_stack.rdf.query.graph.jena.exprFilter._
 import org.apache.jena.graph.{Node, NodeFactory}
 import org.apache.jena.sparql.algebra.op.OpBGP
 import org.apache.jena.sparql.algebra.walker.{ExprVisitorFunction, Walker}
@@ -12,10 +12,7 @@ import scala.collection.mutable
 
 class ExprParser(expr: Expr) extends ExprVisitorFunction with Serializable {
 
-  private var filter = new mutable.Queue[ExprFilter]()
-  private var left: Node = _
-  private var right: Node = _
-  private var value: Node = _
+  private val filter = new mutable.Queue[ExprFilter]()
 
   Walker.walk(expr, this)
 
@@ -30,7 +27,7 @@ class ExprParser(expr: Expr) extends ExprVisitorFunction with Serializable {
   override def visit(func: ExprFunction1): Unit = {
     println(func+":ExprFunction1")
     func match {
-      case _: E_Bound => filter += new ExprBound(left)
+      case _: E_Bound => filter += new ExprBound(func.getArg.asVar.asNode)
       case _: E_LogicalNot => filter.last.asInstanceOf[ExprBound].setLogic(false)
     }
   }
@@ -38,21 +35,26 @@ class ExprParser(expr: Expr) extends ExprVisitorFunction with Serializable {
   override def visit(func: ExprFunction2): Unit = {
     println(func+":ExprFunction2")
     func match {
-      case _: E_Equals =>
-        filter += new ExprCompare(func.getArg1, func.getArg2).setComp("Equals")
-      case _: E_NotEquals =>
-        filter += new ExprCompare(func.getArg1, func.getArg2).setComp("Not Equals")
-      case _: E_GreaterThan =>
-        filter += new ExprCompare(func.getArg1, func.getArg2).setComp("Greater Than")
-      case _: E_GreaterThanOrEqual =>
-        filter += new ExprCompare(func.getArg1, func.getArg2).setComp("Greater Than Or Equal")
-      case _: E_LessThan =>
-        filter += new ExprCompare(func.getArg1, func.getArg2).setComp("Less Than")
-      case _: E_LessThanOrEqual =>
-        filter += new ExprCompare(func.getArg1, func.getArg2).setComp("Less Than Or Equal")
+      case e: E_Equals =>
+        filter += new ExprCompare(func.getArg1, func.getArg2, e)
+      case e: E_NotEquals =>
+        filter += new ExprCompare(func.getArg1, func.getArg2, e)
+      case e: E_GreaterThan =>
+        filter += new ExprCompare(func.getArg1, func.getArg2, e)
+      case e: E_GreaterThanOrEqual =>
+        filter += new ExprCompare(func.getArg1, func.getArg2, e)
+      case e: E_LessThan =>
+        filter += new ExprCompare(func.getArg1, func.getArg2, e)
+      case e: E_LessThanOrEqual =>
+        filter += new ExprCompare(func.getArg1, func.getArg2, e)
       case _: E_Add =>
-      case _: E_Subtract => println(func+":E_Subtract")
-      case _: E_LogicalAnd => println(func+":E_LogicalAnd")
+      case _: E_Subtract =>
+      case _: E_LogicalAnd => val leftSide = filter.dequeue()
+        val rightSide = filter.dequeue()
+        filter += new ExprLogical(leftSide, rightSide, "And")
+      case _: E_LogicalOr => val leftSide = filter.dequeue()
+        val rightSide = filter.dequeue()
+        filter += new ExprLogical(leftSide, rightSide, "Or")
       case _ =>
         throw new UnsupportedOperationException("Not support the expression of ExprFunction2")
     }
@@ -65,7 +67,9 @@ class ExprParser(expr: Expr) extends ExprVisitorFunction with Serializable {
   override def visit(func: ExprFunctionN): Unit = {
     println(func+":ExprFunctionN")
     func match {
-      case _: E_Regex => filter += new ExprRegex(left, value)
+      case _: E_Regex => val left = func.getArgs.toList.head.asVar.asNode
+        val right = func.getArgs.toList(1).getConstant.asNode
+        filter += new ExprRegex(left, right)
       case _ =>  throw new UnsupportedOperationException("Not support the expression of ExprFunctionN")
     }
   }
@@ -87,19 +91,13 @@ class ExprParser(expr: Expr) extends ExprVisitorFunction with Serializable {
 
   override def visit(exprVar: ExprVar): Unit = {
     println(exprVar+":ExprVar")
-    if(left == null){
-      left= exprVar.getAsNode
-    } else {
-      right = exprVar.getAsNode
-    }
   }
 
   override def visit(nodeValue: NodeValue): Unit = {
     println(nodeValue+":NodeValue")
-    value = nodeValue.asNode()
   }
 
-  def getFilter: mutable.Queue[ExprFilter] = {
-    filter
+  def getFilter: ExprFilter = {
+    filter.last
   }
 }

@@ -1,10 +1,10 @@
-package net.sansa_stack.rdf.query.graph.jena.graphOp
+package net.sansa_stack.rdf.query.graph.jena.resultOp
 import org.apache.jena.graph.Node
 import org.apache.jena.sparql.algebra.op.OpExtend
 
 import scala.collection.JavaConversions._
 
-class GraphExtend(op: OpExtend) extends GraphOp {
+class ResultExtend(op: OpExtend) extends ResultOp {
 
   private val tag = "EXTEND"
   private val sub = op.getVarExprList.getVars.toList.head

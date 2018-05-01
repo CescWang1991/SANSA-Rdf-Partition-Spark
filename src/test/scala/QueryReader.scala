@@ -1,4 +1,4 @@
-import net.sansa_stack.rdf.query.graph.jena.graphOp._
+import net.sansa_stack.rdf.query.graph.jena.resultOp._
 import net.sansa_stack.rdf.query.graph.jena.patternOp.PatternOp
 import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, ExprParser, SparqlParser}
 import net.sansa_stack.rdf.query.graph.matching._
@@ -30,7 +30,7 @@ object QueryReader {
     solutionMapping.foreach(println(_))
     var intermediate = solutionMapping
     sp.getOps.foreach{
-      case op: GraphOp => intermediate = op.execute(intermediate)
+      case op: ResultOp => intermediate = op.execute(intermediate)
         println(op.getTag)
         intermediate.foreach(println(_))
       case op: PatternOp => intermediate = op.execute(intermediate, graph, session)

@@ -1,11 +1,11 @@
-package net.sansa_stack.rdf.query.graph.jena.graphOp
+package net.sansa_stack.rdf.query.graph.jena.resultOp
 
 import org.apache.jena.graph.Node
 
 /**
   * Class that execute REDUCED modifier. Support syntax as SELECT REDUCED ?user WHERE ...
   */
-class GraphReduced extends GraphOp {
+class ResultReduced extends ResultOp {
 
   private val tag = "REDUCED"
 

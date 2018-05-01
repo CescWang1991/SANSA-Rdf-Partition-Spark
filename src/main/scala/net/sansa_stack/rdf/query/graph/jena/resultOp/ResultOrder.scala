@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.query.graph.jena.graphOp
+package net.sansa_stack.rdf.query.graph.jena.resultOp
 
 import org.apache.jena.graph.Node
 import org.apache.jena.sparql.algebra.op.OpOrder
@@ -9,7 +9,7 @@ import scala.collection.JavaConversions._
   * Class that execute SPARQL ORDERBY operation. Currently support for ordering by at most four variables in the same time.
   * @param op Order operator
   */
-class GraphOrder(op: OpOrder) extends GraphOp {
+class ResultOrder(op: OpOrder) extends ResultOp {
 
   private val tag = "ORDER BY"
 

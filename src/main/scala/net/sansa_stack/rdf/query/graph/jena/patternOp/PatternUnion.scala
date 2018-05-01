@@ -1,6 +1,6 @@
 package net.sansa_stack.rdf.query.graph.jena.patternOp
 
-import net.sansa_stack.rdf.query.graph.jena.graphOp.GraphOp
+import net.sansa_stack.rdf.query.graph.jena.resultOp.ResultOp
 import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, ExprParser, Ops}
 import net.sansa_stack.rdf.query.graph.matching.GenerateSolutionMappings
 import org.apache.jena.graph.{Node, Triple}
@@ -27,7 +27,7 @@ class PatternUnion(bgp: Iterator[Triple], ops: mutable.Queue[Ops]) extends Patte
     var union = GenerateSolutionMappings.run[Node, Node](graph,
       BasicGraphPattern(bgp, session.sparkContext).triplePatterns,
       session)
-    ops.foreach(op => union = op.asInstanceOf[GraphOp].execute(union))
+    ops.foreach(op => union = op.asInstanceOf[ResultOp].execute(union))
     input ++ union
   }
 
