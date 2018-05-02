@@ -85,7 +85,7 @@ WHERE {
 }
 ```
 
-#### Example: Constraints in Optional Pattern Matching
+#### Example: Constraints in Union Pattern Matching
 ```sparql
 PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 SELECT ?user ?age
@@ -223,6 +223,7 @@ WHERE {
     ?user foaf:age ?age .
 } ORDER BY ?age
 ```
+Note: support write functions for the variables, such as ORDER BY xsd:double(str(?age)).
 
 #### Example: [Projection](https://www.w3.org/TR/sparql11-query/#modProjection)<a name="Projection"></a>
 ```sparql
@@ -260,4 +261,12 @@ WHERE {
     ?user tw:follows ?follower .
 } LIMIT 3
 OFFSET 2
+```
+
+#### Example: [DESCRIBE](https://www.w3.org/TR/sparql11-query/#describe)
+Returns a single result RDF graph containing RDF data about resources.
+```sparql
+PREFIX tw: <http://twitter/>
+DESCRIBE ?user
+WHERE { ?user tw:follows tw:user3 . }
 ```

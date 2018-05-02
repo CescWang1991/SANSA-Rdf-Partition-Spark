@@ -1,0 +1,5 @@
+PREFIX tw: <http://twitter/>
+SELECT ?property ?info
+WHERE {
+    tw:user0 ?property ?info .
+}

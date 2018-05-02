@@ -1,7 +1,11 @@
 package net.sansa_stack.rdf.query.graph.jena.resultOp
 
-import org.apache.jena.graph.Node
+import net.sansa_stack.rdf.query.graph.jena.ExprParser
+import net.sansa_stack.rdf.query.graph.jena.exprFilter.{ExprBound, ExprFilter}
+import org.apache.jena.graph.{Node, NodeFactory}
 import org.apache.jena.sparql.algebra.op.OpOrder
+import org.apache.jena.sparql.algebra.walker.Walker
+import org.apache.jena.sparql.expr._
 
 import scala.collection.JavaConversions._
 
@@ -14,9 +18,25 @@ class ResultOrder(op: OpOrder) extends ResultOp {
   private val tag = "ORDER BY"
 
   override def execute(input: Array[Map[Node, Node]]): Array[Map[Node, Node]] = {
-    val vars = op.getConditions.toList.map(_.expression.asVar().asNode())
+    //val vars = op.getConditions.toList.map(sc => new ExprParser(sc.getExpression).getVar.getAsNode)
+    val parsers = op.getConditions.toList.map(sc => new ExprParser(sc.getExpression))
     val dirs = op.getConditions.toList.map(_.direction)
-    vars.length match {
+    parsers.length match {
+      case 1 => input.sortBy(map => parsers.head.getFunction.evaluate(map).toString)(order1(dirs.head))
+      case 2 => input.sortBy(map =>
+        (parsers.head.getFunction.evaluate(map).toString,
+          parsers(1).getFunction.evaluate(map).toString))(order2(dirs.head, dirs(1)))
+      case 3 => input.sortBy(map =>
+        (parsers.head.getFunction.evaluate(map).toString,
+          parsers(1).getFunction.evaluate(map).toString,
+          parsers(2).getFunction.evaluate(map).toString))(order3(dirs.head, dirs(1), dirs(2)))
+      case 4 => input.sortBy(map =>
+        (parsers.head.getFunction.evaluate(map).toString,
+          parsers(1).getFunction.evaluate(map).toString,
+          parsers(2).getFunction.evaluate(map).toString,
+          parsers(3).getFunction.evaluate(map).toString))(order4(dirs.head, dirs(1), dirs(2), dirs(3)))
+    }
+    /*vars.length match {
       case 1 => input.sortBy(m =>
         m(vars.head).toString)(order1(dirs.head))
       case 2 => input.sortBy(m =>
@@ -28,7 +48,7 @@ class ResultOrder(op: OpOrder) extends ResultOp {
       )(order4(dirs.head, dirs(1), dirs(2), dirs(3)))
       case _ => println("No support order by more than 4 variables")
         input
-    }
+    }*/
   }
 
   def test(input: Array[Map[Node, Node]]): Unit = {

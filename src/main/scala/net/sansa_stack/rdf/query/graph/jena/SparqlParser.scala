@@ -1,6 +1,6 @@
 package net.sansa_stack.rdf.query.graph.jena
 
-import net.sansa_stack.rdf.query.graph.jena.newOp.{NewDistinct, NewProject}
+import net.sansa_stack.rdf.query.graph.jena.resultRddOp.{ResultRddDistinct, ResultRddProject}
 import net.sansa_stack.rdf.query.graph.jena.resultOp._
 import net.sansa_stack.rdf.query.graph.jena.patternOp.{PatternNegate, PatternOp, PatternOptional, PatternUnion}
 import org.apache.jena.query.{Query, QueryFactory}

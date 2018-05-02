@@ -7,14 +7,15 @@ import org.apache.jena.sparql.expr._
 
 /**
   * Class that evaluate solution based on expression. Support expression as FILTER (?age >= 18).
-  * @param left Expression of left side.
-  * @param right Expression of right side.
+  * @param e Expression of the filter.
   *
   * @author Zhe Wang
   */
-class ExprCompare(left: Expr, right: Expr, e: ExprFunction2) extends ExprFilter {
+class ExprCompare(e: ExprFunction2) extends ExprFilter {
 
   private val tag = "Filter Comparision"
+  private val left = e.getArg1
+  private val right = e.getArg2
 
   override def evaluate(solution: Map[Node, Node]): Boolean = {
 
@@ -52,6 +53,10 @@ class ExprCompare(left: Expr, right: Expr, e: ExprFunction2) extends ExprFilter 
   }
 
   override def getTag: String = { tag }
+
+  def getLeft: Expr = { left }
+
+  def getRight: Expr = { right }
 
   private def compare(leftValue: Node, right: Expr): Boolean = {
     if(right.getConstant.isDate){   //compare date

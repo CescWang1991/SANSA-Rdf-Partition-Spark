@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.query.graph.jena.newOp
+package net.sansa_stack.rdf.query.graph.jena.resultRddOp
 
 import net.sansa_stack.rdf.query.graph.jena.Ops
 import net.sansa_stack.rdf.query.graph.matching.util.Result
@@ -11,7 +11,7 @@ import org.apache.spark.sql.SparkSession
   *
   * @author Zhe Wang
   */
-trait NewOp extends Ops{
+trait ResultRddOp extends Ops{
 
   def execute(input: RDD[Result[Node]], session: SparkSession): RDD[Result[Node]]
 

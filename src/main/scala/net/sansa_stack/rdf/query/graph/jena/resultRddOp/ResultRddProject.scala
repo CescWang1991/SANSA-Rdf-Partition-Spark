@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.query.graph.jena.newOp
+package net.sansa_stack.rdf.query.graph.jena.resultRddOp
 
 import net.sansa_stack.rdf.query.graph.matching.util.Result
 import org.apache.jena.graph.Node
@@ -8,7 +8,7 @@ import org.apache.spark.sql.SparkSession
 
 import scala.collection.JavaConversions._
 
-class NewProject(val op: OpProject) extends NewOp {
+class ResultRddProject(val op: OpProject) extends ResultRddOp {
   private val tag = "SELECT"
   private val varSet = op.getVars.toList.map(v => v.asNode()).toSet
 

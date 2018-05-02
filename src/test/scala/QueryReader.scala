@@ -2,6 +2,7 @@ import net.sansa_stack.rdf.query.graph.jena.resultOp._
 import net.sansa_stack.rdf.query.graph.jena.patternOp.PatternOp
 import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, ExprParser, SparqlParser}
 import net.sansa_stack.rdf.query.graph.matching._
+import net.sansa_stack.rdf.query.graph.matching.util.GenerateDescribeGraph
 import net.sansa_stack.rdf.spark.graph.LoadGraph
 import net.sansa_stack.rdf.spark.io.NTripleReader
 import org.apache.jena.graph.Node
@@ -18,7 +19,7 @@ import scala.io.Source
 
 object QueryReader {
   def main(args: Array[String]): Unit = {
-    val spPath = "src/resources/BSBM/query5.txt"
+    val spPath = "src/resources/BSBM/query11.txt"
     val ntPath = "src/resources/Rdf/Clustering_sampledata.nt"
 
     val sp = new SparqlParser(spPath)
@@ -37,5 +38,8 @@ object QueryReader {
         println(op.getTag)
         intermediate.foreach(println(_))
     }
+    val result = intermediate
+    /*println("DESCRIBE")
+    GenerateDescribeGraph.run(result, graph).triplets.collect().foreach(println(_))*/
   }
 }

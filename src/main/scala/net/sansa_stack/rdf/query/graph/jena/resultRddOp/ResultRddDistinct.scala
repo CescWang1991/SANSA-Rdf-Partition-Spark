@@ -1,11 +1,11 @@
-package net.sansa_stack.rdf.query.graph.jena.newOp
+package net.sansa_stack.rdf.query.graph.jena.resultRddOp
 
 import net.sansa_stack.rdf.query.graph.matching.util.Result
 import org.apache.jena.graph.Node
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
 
-class NewDistinct extends NewOp {
+class ResultRddDistinct extends ResultRddOp {
 
   private val tag = "DISTINCT"
 

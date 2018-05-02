@@ -1,4 +1,4 @@
-import net.sansa_stack.rdf.query.graph.jena.newOp.NewOp
+import net.sansa_stack.rdf.query.graph.jena.resultRddOp.ResultRddOp
 import net.sansa_stack.rdf.query.graph.jena.resultOp.ResultOp
 import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, SparqlParser}
 import net.sansa_stack.rdf.query.graph.matching.GenerateSolutionMappings
@@ -24,7 +24,7 @@ object ResultTest {
     val result = ResultFactory.create(solutionMapping, session)
     var intermediate = result
     sp.getOps.foreach {
-      case op: NewOp => println(op.getTag)
+      case op: ResultRddOp => println(op.getTag)
         intermediate = op.execute(intermediate, session)
         intermediate.collect().foreach(result => println(result))
       case op: ResultOp => println(op.getTag)
