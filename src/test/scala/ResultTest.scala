@@ -1,6 +1,6 @@
 import net.sansa_stack.rdf.query.graph.jena.resultRddOp.ResultRddOp
 import net.sansa_stack.rdf.query.graph.jena.resultOp.ResultOp
-import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, SparqlParser}
+import net.sansa_stack.rdf.query.graph.jena.SparqlParser
 import net.sansa_stack.rdf.query.graph.matching.GenerateSolutionMappings
 import net.sansa_stack.rdf.query.graph.matching.util.ResultFactory
 import net.sansa_stack.rdf.spark.graph.LoadGraph
@@ -19,8 +19,8 @@ object ResultTest {
       .getOrCreate()
     val graph = LoadGraph.apply (NTripleReader.load (session, ntPath))
     val sp = new SparqlParser(spPath)
-    val bgp = BasicGraphPattern(sp.getElementTriples.toIterator, session.sparkContext)
-    val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
+    //val bgp = BasicGraphPattern(sp.getElementTriples.toIterator, session.sparkContext)
+    /*val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
     val result = ResultFactory.create(solutionMapping, session)
     var intermediate = result
     sp.getOps.foreach {
@@ -28,6 +28,6 @@ object ResultTest {
         intermediate = op.execute(intermediate, session)
         intermediate.collect().foreach(result => println(result))
       case op: ResultOp => println(op.getTag)
-    }
+    }*/
   }
 }

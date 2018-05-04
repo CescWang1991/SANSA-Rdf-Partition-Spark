@@ -1,7 +1,8 @@
 package net.sansa_stack.rdf.query.graph.jena.patternOp
 
 import net.sansa_stack.rdf.query.graph.jena.resultOp.{ResultFilter, ResultOp}
-import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, ExprParser, Ops, SparqlParser}
+import net.sansa_stack.rdf.query.graph.jena.util.{BasicGraphPattern, ResultMapping}
+import net.sansa_stack.rdf.query.graph.jena.{ExprParser, Ops, SparqlParser}
 import net.sansa_stack.rdf.query.graph.matching.GenerateSolutionMappings
 import org.apache.jena.graph.{Node, Triple}
 import org.apache.jena.sparql.algebra.op.{OpBGP, OpLeftJoin}
@@ -14,9 +15,8 @@ import scala.collection.mutable
 
 /**
   * Class that execute SPARQL OPTIONAL operation
-  * @param bgp Basic Pattern for optional
   */
-class PatternOptional(bgp: Iterator[Triple], exprs: ExprList) extends PatternOp {
+class PatternOptional(triples: Iterator[Triple], exprs: ExprList) extends PatternOp {
 
   private val tag = "OPTIONAL"
   private val ops = new mutable.Queue[ResultFilter]()
@@ -24,9 +24,7 @@ class PatternOptional(bgp: Iterator[Triple], exprs: ExprList) extends PatternOp 
   override def execute(input: Array[Map[Node, Node]],
                        graph: Graph[Node, Node],
                        session: SparkSession): Array[Map[Node, Node]] = {
-    var optional = GenerateSolutionMappings.run[Node, Node](graph,
-      BasicGraphPattern(bgp, session.sparkContext).triplePatterns,
-      session)
+    var optional = ResultMapping.run(graph, new BasicGraphPattern(triples), session)
     if(!(exprs==null)){
       exprs.foreach(expr => ops.enqueue(new ResultFilter(expr)))
       ops.foreach(op => optional = op.asInstanceOf[ResultOp].execute(optional))

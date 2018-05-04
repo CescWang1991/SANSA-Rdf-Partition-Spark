@@ -12,11 +12,11 @@ import scala.reflect.ClassTag
   *
   * @author Zhe Wang
   */
-class TriplePattern[VD: ClassTag, ED: ClassTag](t:VD, p: ED, o: VD) extends Serializable {
+class TriplePattern[VD: ClassTag, ED: ClassTag](s:VD, p: ED, o: VD) extends Serializable {
 
   import TriplePattern._
 
-  val srcAttr: VD = t
+  val srcAttr: VD = s
   val attr: ED = p
   val dstAttr: VD = o
 

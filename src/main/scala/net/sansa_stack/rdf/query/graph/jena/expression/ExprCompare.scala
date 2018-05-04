@@ -1,4 +1,4 @@
-package net.sansa_stack.rdf.query.graph.jena.exprFilter
+package net.sansa_stack.rdf.query.graph.jena.expression
 
 import javax.xml.datatype.XMLGregorianCalendar
 import org.apache.jena.datatypes.RDFDatatype

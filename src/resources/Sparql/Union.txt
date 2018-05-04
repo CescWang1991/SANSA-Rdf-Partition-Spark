@@ -3,5 +3,5 @@ SELECT ?user
 WHERE {
     { ?user tw:follows tw:user7 . }
     UNION { ?user tw:follows ?follower .
-    FILTER regex(?follower, tw:user2) }
+    FILTER (?follower = tw:user2) }
 }

@@ -2,7 +2,8 @@ package net.sansa_stack.rdf.query.graph.matching.util
 
 import net.sansa_stack.rdf.query.graph.jena.patternOp.PatternOp
 import net.sansa_stack.rdf.query.graph.jena.resultOp.{ResultOp, ResultProject}
-import net.sansa_stack.rdf.query.graph.jena.{BasicGraphPattern, SparqlParser}
+import net.sansa_stack.rdf.query.graph.jena.SparqlParser
+import net.sansa_stack.rdf.query.graph.jena.util.BasicGraphPattern
 import net.sansa_stack.rdf.query.graph.matching.GenerateSolutionMappings
 import net.sansa_stack.rdf.spark.graph.LoadGraph
 import net.sansa_stack.rdf.spark.io.NTripleReader
@@ -43,9 +44,9 @@ object ResultFactory {
     val session = SparkSession.builder().master("local[*]").getOrCreate()
     val sp = new SparqlParser(spPath)
     val graph = LoadGraph.apply (NTripleReader.load (session, ntPath))
-    val bgp = BasicGraphPattern(sp.getElementTriples.toIterator, session.sparkContext)
-    val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
+    val bgp = new BasicGraphPattern(sp.getElementTriples.toIterator)
+    /*val solutionMapping = GenerateSolutionMappings.run[Node, Node](graph, bgp.triplePatterns, session)
     val results = ResultFactory.create[Node](solutionMapping, session)//.foreach(println(_))
-    sp.getOps.head.asInstanceOf[ResultProject].test(results, session).foreach(println(_))
+    sp.getOps.head.asInstanceOf[ResultProject].test(results, session).foreach(println(_))*/
   }
 }

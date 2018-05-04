@@ -1,7 +1,8 @@
 package net.sansa_stack.rdf.query.graph.jena.patternOp
-import net.sansa_stack.rdf.query.graph.jena.BasicGraphPattern
+import net.sansa_stack.rdf.query.graph.jena.util.{BasicGraphPattern, ResultMapping}
 import net.sansa_stack.rdf.query.graph.matching.GenerateSolutionMappings
 import org.apache.jena.graph.Node
+import org.apache.jena.graph.Triple
 import org.apache.jena.sparql.core.BasicPattern
 import org.apache.spark.graphx.Graph
 import org.apache.spark.sql.SparkSession
@@ -11,18 +12,15 @@ import scala.util.control.Breaks._
 
 /**
   * Class that execute SPARQL MINUS and FILTER NOT operations
-  * @param bgp Basic Pattern for negation
   */
-class PatternNegate(bgp: BasicPattern) extends PatternOp {
+class PatternNegate(triples: Iterator[Triple]) extends PatternOp {
 
   private val tag = "FILTER NOT EXISTS / MINUS"
 
   override def execute(input: Array[Map[Node, Node]],
                        graph: Graph[Node, Node],
                        session: SparkSession): Array[Map[Node, Node]] = {
-    val negation = GenerateSolutionMappings.run[Node, Node](graph,
-      BasicGraphPattern(bgp.toIterator, session.sparkContext).triplePatterns,
-      session)
+    val negation = ResultMapping.run(graph, new BasicGraphPattern(triples), session)
     val intVar = input.head.keySet.intersect(negation.head.keySet).toList
     input.filterNot{ i =>
       var neg = false

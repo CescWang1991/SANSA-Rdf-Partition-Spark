@@ -1,6 +1,6 @@
 package net.sansa_stack.rdf.query.graph.jena
 
-import net.sansa_stack.rdf.query.graph.jena.exprFilter._
+import net.sansa_stack.rdf.query.graph.jena.expression._
 import org.apache.jena.graph.{Node, NodeFactory}
 import org.apache.jena.sparql.algebra.op.OpBGP
 import org.apache.jena.sparql.algebra.walker.{ExprVisitorFunction, Walker}

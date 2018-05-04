@@ -2,7 +2,7 @@ package net.sansa_stack.rdf.query.graph.jena
 
 import net.sansa_stack.rdf.query.graph.jena.resultRddOp.{ResultRddDistinct, ResultRddProject}
 import net.sansa_stack.rdf.query.graph.jena.resultOp._
-import net.sansa_stack.rdf.query.graph.jena.patternOp.{PatternNegate, PatternOp, PatternOptional, PatternUnion}
+import net.sansa_stack.rdf.query.graph.jena.patternOp._
 import org.apache.jena.query.{Query, QueryFactory}
 import org.apache.jena.graph.Triple
 import org.apache.jena.sparql.algebra.{Algebra, Op, OpVisitorBase, OpWalker}
@@ -42,6 +42,7 @@ class SparqlParser(path: String, op: Op) extends OpVisitorBase with Serializable
     for (triple <- triples) {
       elementTriples += triple
     }
+    if(ops.isEmpty){ ops.enqueue(new PatternBgp(elementTriples.toIterator)) }
   }
 
   override def visit(opDistinct: OpDistinct): Unit = {
@@ -63,11 +64,12 @@ class SparqlParser(path: String, op: Op) extends OpVisitorBase with Serializable
         for(triple <- triples) {
           elementTriples += triple
         }
+        ops.head.asInstanceOf[PatternBgp].setBgp(elementTriples.toIterator)
       case e: E_NotExists => val triples = e.getGraphPattern.asInstanceOf[OpBGP].getPattern
         for(triple <- elementTriples){
           triples.add(triple)
         }
-        ops.enqueue(new PatternNegate(triples))
+        ops.enqueue(new PatternNegate(triples.toIterator))
       case other => ops.enqueue(new ResultFilter(other))
     }
   }
@@ -80,16 +82,13 @@ class SparqlParser(path: String, op: Op) extends OpVisitorBase with Serializable
   override def visit(opLeftJoin: OpLeftJoin): Unit = {
     println("opLeftJoin: "+opLeftJoin)
     val sp = new SparqlParser(opLeftJoin.getRight)
-    elementTriples --= sp.getElementTriples
     ops.enqueue(new PatternOptional(sp.getElementTriples.toIterator, opLeftJoin.getExprs))
   }
 
   override def visit(opMinus: OpMinus): Unit = {
     println("opMinus: "+opMinus)
     val triples = opMinus.getRight.asInstanceOf[OpBGP].getPattern
-    ops.enqueue(new PatternNegate(triples))
-    val sp = new SparqlParser(opMinus.getRight)
-    elementTriples --= sp.getElementTriples
+    ops.enqueue(new PatternNegate(triples.toIterator))
   }
 
   override def visit(opOrder: OpOrder): Unit = {
@@ -116,7 +115,7 @@ class SparqlParser(path: String, op: Op) extends OpVisitorBase with Serializable
   override def visit(opUnion: OpUnion): Unit = {
     println("opUnion: "+opUnion)
     val sp = new SparqlParser(opUnion.getRight)
-    elementTriples --= sp.getElementTriples
+    sp.getOps.dequeue()
     sp.getOps.foreach(op => ops.dequeueFirst {
       case e: ResultFilter => e.getExpr.equals(op.asInstanceOf[ResultFilter].getExpr)
       case _ => false

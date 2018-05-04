@@ -1,6 +1,6 @@
-PREFIX foaf: <http://xmlns.com/foaf/0.1/>
 PREFIX tw: <http://twitter/>
-SELECT DISTINCT ?user
+SELECT ?s ?p ?o
 WHERE {
-    ?user tw:follows ?follower .
+    ?s ?p ?o .
 }
+ORDER BY ?s

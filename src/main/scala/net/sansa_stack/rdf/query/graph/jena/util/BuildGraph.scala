@@ -1,5 +1,6 @@
-package net.sansa_stack.rdf.query.graph.matching.util
+package net.sansa_stack.rdf.query.graph.jena.util
 
+import org.apache.jena.graph.Node
 import org.apache.spark.graphx.Graph
 
 import scala.reflect.ClassTag
@@ -7,9 +8,11 @@ import scala.reflect.ClassTag
 /**
   * Returns a single result RDF graph containing RDF data from the input solution mapping.
   */
-object GenerateDescribeGraph {
+object BuildGraph {
 
-  def run[VD: ClassTag, ED: ClassTag](mapping: Array[Map[VD, VD]], graph: Graph[VD, ED]): Graph[VD, ED] = {
+  //def construct()
+
+  def describe(mapping: Array[Map[Node, Node]], graph: Graph[Node, Node]): Graph[Node, Node] = {
     val attrSet = mapping.flatMap(m => m.valuesIterator)
     val validGraph = graph.subgraph(epred = edge => attrSet.contains(edge.srcAttr) || attrSet.contains(edge.dstAttr))
     validGraph

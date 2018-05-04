@@ -1,7 +1,7 @@
 package net.sansa_stack.rdf.query.graph.jena.resultOp
 
 import net.sansa_stack.rdf.query.graph.jena.ExprParser
-import net.sansa_stack.rdf.query.graph.jena.exprFilter.{ExprBound, ExprFilter}
+import net.sansa_stack.rdf.query.graph.jena.expression.{ExprBound, ExprFilter}
 import org.apache.jena.graph.{Node, NodeFactory}
 import org.apache.jena.sparql.algebra.op.OpOrder
 import org.apache.jena.sparql.algebra.walker.Walker

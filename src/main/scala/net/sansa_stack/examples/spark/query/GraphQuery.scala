@@ -1,6 +1,6 @@
 package net.sansa_stack.examples.spark.query
 
-import net.sansa_stack.rdf.query.graph.jena.BasicGraphPattern
+import net.sansa_stack.rdf.query.graph.jena.util.BasicGraphPattern
 import net.sansa_stack.rdf.query.graph.matching.GenerateSolutionMappings
 import net.sansa_stack.rdf.spark.graph.LoadGraph
 import net.sansa_stack.rdf.spark.io.NTripleReader
