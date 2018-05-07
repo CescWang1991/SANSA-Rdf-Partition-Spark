@@ -1,6 +1,6 @@
 package net.sansa_stack.examples.spark.query
 
-import net.sansa_stack.rdf.query.graph.jena.BasicGraphPattern
+import net.sansa_stack.rdf.query.graph.jena.util.BasicGraphPattern
 import net.sansa_stack.rdf.query.graph.matching.GenerateSolutionMappings
 import net.sansa_stack.rdf.spark.graph.LoadGraph
 import net.sansa_stack.rdf.spark.io.NTripleReader
@@ -9,7 +9,7 @@ import org.apache.spark.sql.SparkSession
 object GraphQuery {
   def main(args: Array[String]): Unit = {
     val ntPath = "src/resources/Clustering_sampledata.nt"
-    val sqPath = "src/resources/GraphPattern.txt"
+    val sqPath = "src/resources/SelectProject.txt"
     val session = SparkSession.builder()
       .master("local[*]")
       .appName("SANSA - Graph Query")

@@ -1,0 +1,9 @@
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+PREFIX tw: <http://twitter/>
+SELECT ?name WHERE {
+    ?user foaf:name ?name
+    MINUS {
+        ?user  tw:follows ?follower .
+        ?follower foaf:name "Diana" .
+    }
+}

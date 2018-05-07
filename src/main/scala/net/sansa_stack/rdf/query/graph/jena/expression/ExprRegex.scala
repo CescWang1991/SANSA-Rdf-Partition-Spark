@@ -1,6 +1,7 @@
 package net.sansa_stack.rdf.query.graph.jena.expression
 
 import org.apache.jena.graph.Node
+import org.apache.jena.sparql.expr.NodeValue
 
 /**
   * Class that evaluate solution based on expression. Support expression as FILTER regex(?user "tw:user0")
@@ -13,10 +14,8 @@ class ExprRegex(variable: Node, value: Node) extends ExprFilter {
 
   override def evaluate(solution: Map[Node, Node]): Boolean = {
     if(solution(variable).isLiteral){
-      //println(solution(variable).getLiteral.getValue.toString)
-      //println(value.getLiteral.getValue.toString)
       solution(variable).getLiteral.getValue.toString
-        .contains(value.getLiteral.getValue.toString)
+        .contains(value.getLiteralValue.toString)
     }
     else{
       false

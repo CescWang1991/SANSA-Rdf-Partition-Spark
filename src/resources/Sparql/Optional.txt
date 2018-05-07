@@ -1,0 +1,7 @@
+PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+SELECT DISTINCT ?user ?age
+WHERE {
+    ?user foaf:age ?age .
+    OPTIONAL { ?user foaf:name ?name . }
+    FILTER (bound(?name))
+}

@@ -1,6 +1,7 @@
-package net.sansa_stack.rdf.query.graph.matching
+package net.sansa_stack.rdf.query.graph.jena.util
 
 import net.sansa_stack.rdf.query.graph.matching.util.TriplePattern
+import org.apache.jena.graph.Node
 import org.apache.spark.graphx.Graph
 import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SparkSession
@@ -12,23 +13,18 @@ import scala.reflect.ClassTag
   *
   * @author Zhe Wang
   */
-object GenerateSolutionMappings {
+object ResultMapping {
 
   /**
     * run algorithm to generate solution mapping.
     *
-    * @param rdfGraph rdf graph to query.
-    * @param triplePattern collection of sparql triple patterns
-    *
-    * @tparam VD the type of the vertex attribute.
-    * @tparam ED the type of the edge attribute.
     * @return basic graph pattern mapping.
     */
-  def run[VD: ClassTag, ED: ClassTag](rdfGraph: Graph[VD, ED],
-      triplePattern: RDD[TriplePattern[VD, ED]],
-      session: SparkSession): Array[Map[VD, VD]] = {
+  def run(graph: Graph[Node, Node],
+          bgp: BasicGraphPattern,
+          session: SparkSession): Array[Map[Node, Node]] = {
 
-    val ms = new MatchSet(rdfGraph, triplePattern.collect(), session)
+    val ms = new MatchSetNode(graph, bgp, session)
     var finalMatchSet = ms.matchCandidateSet
     var tempMatchSet = ms.matchCandidateSet
     var changed = true
@@ -41,10 +37,10 @@ object GenerateSolutionMappings {
     }
     //finalMatchSet.collect().foreach(println(_))
 
-    var bgpMapping = Array[Map[VD,VD]]()
-    ms.tpList.foreach{ tp =>
+    var bgpMapping = Array[Map[Node,Node]]()
+    bgp.triplePatterns.foreach{ tp =>
       val tpMapping = finalMatchSet
-        .filter(_.tp.equals(tp))
+        .filter(_.pattern.equals(tp))
         .map(_.mapping).collect()
         .map(_.filterKeys(_.toString.startsWith("?")))
         .distinct
@@ -58,8 +54,8 @@ object GenerateSolutionMappings {
     bgpMapping
   }
 
-  private def arrayOfMapJoin[VD](a: Array[Map[VD,VD]], b: Array[Map[VD,VD]]): Array[Map[VD,VD]] = {
-    var c = Array[Map[VD,VD]]()
+  private def arrayOfMapJoin[Node](a: Array[Map[Node,Node]], b: Array[Map[Node,Node]]): Array[Map[Node,Node]] = {
+    var c = Array[Map[Node,Node]]()
     if(a.head.keySet.intersect(b.head.keySet).isEmpty){   //two arrays have no common keys
       a.foreach(x => b.foreach(y => c = c :+ x.++(y)))
       c

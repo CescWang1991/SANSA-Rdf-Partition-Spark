@@ -1,0 +1,6 @@
+PREFIX tw: <http://twitter/>
+SELECT ?s ?p ?o
+WHERE {
+    ?s ?p ?o .
+}
+ORDER BY ?s

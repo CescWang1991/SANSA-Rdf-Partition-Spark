@@ -1,21 +1,20 @@
-package net.sansa_stack.rdf.query.graph.jena.graphOp
+package net.sansa_stack.rdf.query.graph.jena.resultOp
 
 import net.sansa_stack.rdf.query.graph.jena.ExprParser
 import org.apache.jena.graph.Node
 import org.apache.jena.sparql.algebra.op.OpFilter
-import org.apache.jena.sparql.expr.ExprList
+import org.apache.jena.sparql.expr.{Expr, ExprList}
 import org.apache.spark.rdd.RDD
 
 import scala.collection.JavaConversions._
 
 /**
   * Class that execute SPARQL FILTER operation
-  * @param op FILTER operation
+  * @param expr FILTER expression
   */
-class GraphFilter(val op: OpFilter) extends GraphOp {
+class ResultFilter(val expr: Expr) extends ResultOp {
 
   private val tag = "FILTER"
-  private val expr = op.getExprs
 
   /**
     * Filter the result by the given filter expression
@@ -24,21 +23,15 @@ class GraphFilter(val op: OpFilter) extends GraphOp {
     */
   override def execute(input: Array[Map[Node, Node]]): Array[Map[Node, Node]] = {
     val exprParser = new ExprParser(expr)
-    exprParser.exprVisitorWalker()
-    val filterGroup = exprParser.getFilterGroup
+    val filterOp = exprParser.getFilter
     var intermediate = input
-    filterGroup.foreach(exprFilter =>
-      intermediate = intermediate.filter(solution => exprFilter.evaluate(solution)))
+    //filter.foreach(expr => intermediate = intermediate.filter(solution => expr.evaluate(solution)))
+    intermediate = intermediate.filter(solution => filterOp.evaluate(solution))
     val output = intermediate
     output
   }
 
-  def test(): Unit = {
-    val exprParser = new ExprParser(expr)
-    exprParser.exprVisitorWalker()
-  }
-
   override def getTag: String = { tag }
 
-  def getExpr: ExprList = { expr }
+  def getExpr: Expr = { expr }
 }

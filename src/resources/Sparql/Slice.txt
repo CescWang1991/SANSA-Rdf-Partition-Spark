@@ -1,0 +1,6 @@
+PREFIX tw: <http://twitter/>
+SELECT DISTINCT ?user
+WHERE {
+    ?user tw:follows ?follower .
+} LIMIT 3
+OFFSET 2
